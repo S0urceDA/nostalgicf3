@@ -19,6 +19,7 @@ Use vanilla **Debug Options (F3 + F6)** to choose what appears. Nostalgic F3 has
 - Fixes the rendered entity counter on Minecraft 1.21.x.
 - Shows F3 behind menus while retaining vanilla F1 behavior.
 - Gives newer vanilla entries consistent positions, including player speed in 26.3.
+- Batches debug graphs and text backgrounds, and caches unchanged text preparation to reduce F3 rendering work.
 
 Vanilla visibility settings, reduced debug information, measurements, charts, and keybinding hints are preserved. Performance information still works with FPS hidden, and day count can appear without local difficulty.
 
@@ -39,6 +40,8 @@ This is a **client-only** mod. Servers do not need it.
 | 26.3 | 26.3 | 0.18.4 | 25 |
 
 Download the matching jar from the [1.0.0 release](https://github.com/S0urceDA/nostalgicf3/releases/tag/v1.0.0), or build from source using the instructions below.
+
+The new F3 rendering optimizations are currently available in source builds. The existing 1.0.0 release downloads have not yet been refreshed.
 
 ## Building
 

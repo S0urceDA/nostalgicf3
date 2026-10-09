@@ -9,7 +9,7 @@ public final class MixinProbe implements PreLaunchEntrypoint {
         try {
             Class<?> overlay = Class.forName("net.minecraft.client.gui.components.DebugScreenOverlay", false,
                     Thread.currentThread().getContextClassLoader());
-            for (String hook : new String[]{"beginFrame", "captureEntry", "left", "right", "skipRedundantSeparator", "cachedWidth"}) {
+            for (String hook : new String[]{"beginFrame", "captureEntry", "left", "right", "skipRedundantSeparator", "cachedWidth", "batchBackgrounds", "cacheText"}) {
                 if (Arrays.stream(overlay.getDeclaredMethods()).noneMatch(m -> m.getName().contains("nostalgicf3$" + hook))) {
                     throw new AssertionError("Missing transformed overlay hook: " + hook);
                 }
@@ -32,6 +32,9 @@ public final class MixinProbe implements PreLaunchEntrypoint {
             check("net.minecraft.client.gui.components.debugchart.AbstractDebugChart", "batchChart");
             check(version.startsWith("1.") ? "net.minecraft.client.gui.render.state.GuiRenderState"
                     : "net.minecraft.client.renderer.state.gui.GuiRenderState", "collectChartRectangles", "flushChartRectangles");
+            check(version.startsWith("1.") ? "net.minecraft.client.gui.render.state.GuiTextRenderState"
+                    : "net.minecraft.client.renderer.state.gui.GuiTextRenderState", "rememberF3Text", "reusePreparedText");
+            PreparedTextProbe.verify(version);
             ChartBatchProbe.verify(version);
             ParticleCounterProbe.verify();
             CollectorProbe.verify(overlay);

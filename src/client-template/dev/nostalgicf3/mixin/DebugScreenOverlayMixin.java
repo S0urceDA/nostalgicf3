@@ -1,6 +1,10 @@
 package dev.nostalgicf3.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import dev.nostalgicf3.render.ChartBatch;
+import dev.nostalgicf3.render.PreparedTextCache;
+import net.minecraft.client.gui.@GRAPHICS@;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.nostalgicf3.layout.ClassicLayout;
@@ -27,6 +31,7 @@ import java.util.Map;
 @Mixin(DebugScreenOverlay.class)
 abstract class DebugScreenOverlayMixin {
     @Unique private ClassicLayout.Frame nostalgicf3$frame;
+    @Unique private final PreparedTextCache nostalgicf3$textCache = new PreparedTextCache();
     @Unique private final TextWidthCache nostalgicf3$widths = new TextWidthCache();
     @Unique private final Map<@ID@, Integer> nostalgicf3$entryIndices = new HashMap<>();
     @Unique private DebugScreenDisplayer nostalgicf3$collector;
@@ -104,6 +109,24 @@ abstract class DebugScreenOverlayMixin {
         int width = original.call(font, text);
         nostalgicf3$widths.put(text, width);
         return width;
+    }
+
+    @WrapMethod(method = "@LINES@")
+    private void nostalgicf3$batchBackgrounds(@GRAPHICS@ graphics, List<String> lines, boolean left@CHART_EXTRA@,
+            Operation<Void> original) {
+        ChartBatch batch = ChartBatch.begin();
+        try { original.call(graphics, lines, left@CHART_CALL@); }
+        finally { batch.end(); }
+    }
+
+    @WrapOperation(method = "@LINES@", at = @At(value = "INVOKE", target =
+            "Lnet/minecraft/client/gui/@GRAPHICS@;@TEXT_DRAW@(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)V"))
+    private void nostalgicf3$cacheText(@GRAPHICS@ graphics, Font font, String text, int x, int y,
+            int color, boolean shadow, Operation<Void> original) {
+        PreparedTextCache.Entry previous = PreparedTextCache.current();
+        PreparedTextCache.setCurrent(nostalgicf3$textCache.select(text));
+        try { original.call(graphics, font, text, x, y, color, shadow); }
+        finally { PreparedTextCache.setCurrent(previous); }
     }
 
 }

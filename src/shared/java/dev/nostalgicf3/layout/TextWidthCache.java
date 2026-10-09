@@ -11,6 +11,8 @@ public final class TextWidthCache {
     private Object font;
     private long generation = -1;
 
+    public static long fontGeneration() { return fontGeneration; }
+
     public static void invalidateFonts() { fontGeneration++; }
 
     public int get(Object currentFont, String text) {
