@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "nostalgicf3_probe",
+  "version": "1.0.0",
+  "name": "Nostalgic F3 test probe",
+  "environment": "client",
+  "entrypoints": {"preLaunch": ["dev.nostalgicf3.probe.MixinProbe"]},
+  "depends": {"nostalgicf3": "*"}
+}

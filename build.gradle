@@ -71,3 +71,27 @@ subprojects {
     }
     tasks.build.finalizedBy collectJar
 }
+repositories { maven { url = 'https://maven.fabricmc.net/' }; mavenCentral() }
+sourceSets { probe }
+dependencies { probeCompileOnly "net.fabricmc:fabric-loader:${loader_version}" }
+tasks.register('probeJar', Jar) {
+    dependsOn probeClasses
+    from sourceSets.probe.output
+    archiveFileName = 'mixin-probe.jar'
+    destinationDirectory = layout.buildDirectory.dir('probe')
+}
+tasks.register('probeAll') {
+    dependsOn subprojects.collect { "${it.path}:runMixinProbe" }
+}
+subprojects {
+    loom {
+        runs {
+            mixinProbe {
+                client()
+                runDir 'build/mixin-probe-run'
+                vmArg "-Dfabric.addMods=${rootProject.layout.buildDirectory.file('probe/mixin-probe.jar').get().asFile.absolutePath}"
+            }
+        }
+    }
+    tasks.named('runMixinProbe') { dependsOn rootProject.tasks.named('probeJar') }
+}
