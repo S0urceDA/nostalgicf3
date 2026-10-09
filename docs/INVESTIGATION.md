@@ -24,3 +24,10 @@ Shared vanilla IDs have J9's relative order and side assignment. Unknown IDs get
 Per the user's explicit choice, this remains a layout-only mod: vanilla measurements are retained rather than reproducing OptiFine-specific minimum-FPS and renderer chunk-update counters. The 1.21.11 text-rendering geometry and colors already match J9.
 
 Verification: complete-row expected fixtures across 2,048 enabled-entry combinations, plus specific FPS/group/empty-group/tie-order/footer/tag fixtures; five builds and test-only Fabric transformation probes for both overlay and entry-list hooks. No claim of a side-by-side visual test is made.
+## 0.1.2: 26.2 K2 pre1 reference and lowered requirements
+
+Inspected preview_OptiFine_26.2_HD_U_K2_pre1.jar supplied by the user. Its explicit right-side list contains memory, system_specs, block state/tags, fluid state/tags and entity. detailed_memory, looking_at_entity_tags, day_count and sound_cache remain in the registration-order tail and route right via the fallback rule. The mod now reproduces that sequence rather than assigning those entries custom positions. Block/fluid tags are explicitly marked for group-call separators in this preview. Player speed is absent from this 26.2 reference and retains its prior 26.3 placement. The J9 legacy-ID sequence is unaffected.
+
+Lowered minimum Fabric Loader from 0.19.5 to 0.17.3 for 1.21.x and 0.18.4 for 26.x. Both legacy targets passed transformation probes on Java 21 with Loader 0.17.3; all three modern targets passed on Java 25 with Loader 0.18.4. All mod classes and the mixin compatibility declaration target Java 21. Minecraft 26.x's own Java 25 runtime requirement remains. Fabric API and external configuration libraries are not required.
+
+Tests include the exact K2 pre1 right-column row sequence and tag separators, alongside the 2,048 visibility fixtures and five version probes. Earlier sections describe historical decisions superseded by this update.

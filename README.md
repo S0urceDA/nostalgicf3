@@ -1,10 +1,10 @@
 # Nostalgic F3
 
-A small client-side Fabric mod that gives vanilla debug entries fixed columns and a classic order. Entry order, side assignments, per-group blank rows, empty target groups and help-footer spacing follow OptiFine 1.21.11 J9. Vanilla FPS measurements are retained. Vanilla Debug Options (F3 + F6) still control visibility, including Always On; reduced debug information and charts are left to vanilla.
+A small client-side Fabric mod that gives vanilla debug entries fixed columns and a classic order. Entry order, side assignments, per-group blank rows, empty target groups and help-footer spacing follow OptiFine 1.21.11 J9 and the supplied 26.2 K2 pre1 layout rules. Vanilla FPS measurements are retained. Vanilla Debug Options (F3 + F6) still control visibility, including Always On; reduced debug information and charts are left to vanilla.
 
 ## Install
 
-Use Fabric Loader 0.19.5 or newer. Choose **one** JAR matching your Minecraft version from `build/libs`, and put it in that game's `mods` folder. Fabric API is not required. The server does not need this mod.
+Use Fabric Loader 0.17.3 or newer on 1.21.x, or 0.18.4 or newer on 26.x. These older baselines passed the real loader probes; the latest Loader is not required. Choose **one** JAR matching your Minecraft version from `build/libs`, and put it in that game's `mods` folder. Fabric API is not required. The server does not need this mod.
 
 | JAR target | Declared compatible Minecraft versions | Game Java |
 | --- | --- | --- |
@@ -18,15 +18,15 @@ The five target versions have passed builds and real Fabric/Mixin transformation
 
 ## Layout
 
-- Left: version, combined FPS/performance/GPU line, TPS, renderer counters; position, section and speed, light, heightmaps, biome, difficulty and day count; generation, spawn and sound information.
-- Right: memory and system information, then targeted block, fluid and entity information. Newer versions' separate tag entries stay with their corresponding target.
+- Left: version, combined FPS/performance/GPU line, TPS, renderer counters; position, section and speed, light, heightmaps, biome and difficulty; generation, spawn and sound information.
+- Right: memory and system information, then targeted block, fluid and entity information. Block/fluid tag groups have their own blank rows. Following the 26.2 preview, detailed memory, entity tags, day count and sound cache follow targeted entity on the right.
 - Unknown mod entries: placed in the right column before indexed entries. Equal-rank entries retain the original enabled-list order, matching J9. No text is discarded.
 
 This mod changes placement, not which entries are enabled. To show additional information, use F3 + F6. Existing visibility choices are preserved.
 
 ## Develop (Windows)
 
-Open this folder as a Gradle project. Building requires JDK 25, even for the Java 21 game targets.
+Open this folder as a Gradle project. Building requires JDK 25, and development launches for 1.21.x use JDK 21. All shipped mod classes target Java 21 bytecode; Minecraft 26.x itself still requires Java 25. If Gradle does not find your installed JDKs, set JAVA_HOME_21_X64/JAVA_HOME_25_X64, or provide -Porg.gradle.java.installations.paths with the comma-separated installation folders.
 
 ```powershell
 $env:JAVA_HOME='C:\Program Files\Java\jdk-25.0.1'
@@ -45,3 +45,4 @@ Git history records the starter, multi-version setup, layout implementation, com
 Project location: `C:\Users\andra\AppData\Roaming\.minecraft\e\nostalgicf3`.
 
 License: CC0-1.0, inherited from the Fabric starter. No Minecraft or OptiFine binaries/source are distributed.
+Version 0.1.2 matches the supplied 26.2 preview's fallback layout as written. Player speed, absent from that preview, retains its established left-column placement on 26.3. Vanilla measurements remain unchanged.
