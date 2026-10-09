@@ -14,7 +14,12 @@ public final class MixinProbe implements PreLaunchEntrypoint {
                     throw new AssertionError("Missing transformed overlay hook: " + hook);
                 }
             }
-            System.out.println("NOSTALGICF3_MIXIN_PROBE_OK: all four overlay hooks transformed successfully.");
+            Class<?> entries = Class.forName("net.minecraft.client.gui.components.debug.DebugScreenEntryList", false,
+                    Thread.currentThread().getContextClassLoader());
+            if (Arrays.stream(entries.getDeclaredMethods()).noneMatch(m -> m.getName().contains("nostalgicf3$order"))) {
+                throw new AssertionError("Missing entry ordering hook");
+            }
+            System.out.println("NOSTALGICF3_MIXIN_PROBE_OK: all overlay and ordering hooks transformed successfully.");
             System.exit(0);
         } catch (Throwable failure) {
             failure.printStackTrace();

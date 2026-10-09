@@ -33,6 +33,10 @@ public final class ClassicLayout {
                 "looking_at_block", "looking_at_block_state", "looking_at_block_tags",
                 "looking_at_fluid", "looking_at_fluid_state", "looking_at_fluid_tags",
                 "looking_at_entity", "looking_at_entity_tags");
+        register(Side.RIGHT, "entity_hitboxes", "chunk_borders", "3d_crosshair", "chunk_section_paths",
+                "chunk_section_octree", "visualize_water_levels", "visualize_heightmap", "visualize_collision_boxes",
+                "visualize_entity_supporting_blocks", "visualize_block_light_levels", "visualize_sky_light_levels",
+                "visualize_solid_faces", "visualize_chunks_on_server", "visualize_sky_light_sections", "chunk_section_visibility");
     }
     private static void register(Side side, String... paths) {
         for (String path : paths) PLACEMENTS.put("minecraft:" + path, new Placement(side, PLACEMENTS.size()));
@@ -41,6 +45,9 @@ public final class ClassicLayout {
         return PLACEMENTS.getOrDefault(id, new Placement(Side.RIGHT, -1));
     }
     public static Side sideOf(String id) { return placement(id).side(); }
+    public static int compareIds(String first, String second) {
+        return Integer.compare(placement(first).rank(), placement(second).rank());
+    }
 
     public static final class Frame {
         private final Map<String, List<Event>> entries = new LinkedHashMap<>();
@@ -50,7 +57,7 @@ public final class ClassicLayout {
         public List<String> column(Side side, List<String> vanillaFooter) {
             List<String> result = new ArrayList<>();
             List<String> ids = entries.keySet().stream().filter(id -> sideOf(id) == side)
-                    .sorted(Comparator.comparingInt((String id) -> placement(id).rank()).thenComparing(id -> id))
+                    .sorted(ClassicLayout::compareIds)
                     .toList();
             int fpsIndex = -1;
             for (String id : ids) {

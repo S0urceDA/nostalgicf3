@@ -59,6 +59,10 @@ public final class LayoutTest {
         modern.capture("minecraft:looking_at_block_state", List.of(group(List.of("Block"))));
         equal(modern.column(RIGHT, List.of()), List.of("", "Block", "#tag"));
         equal(new ClassicLayout.Frame().column(LEFT, List.of("", "Charts")), List.of("", "Charts"));
+        ClassicLayout.Frame unknown = new ClassicLayout.Frame();
+        unknown.capture("z:entry", List.of(line("first")));
+        unknown.capture("a:entry", List.of(line("second")));
+        equal(unknown.column(RIGHT, List.of()), List.of("first", "second"));
         System.out.println("Exact layout checks passed: 2048 row-for-row visibility fixtures plus empty/repeated groups, FPS merging, unknown entries, footer and modern tags.");
     }
 }
