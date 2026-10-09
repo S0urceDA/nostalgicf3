@@ -1,6 +1,6 @@
 # Nostalgic F3
 
-A small client-side Fabric mod that gives vanilla debug entries fixed columns and a classic order. Turning an entry off closes its gap without moving another entry to the opposite side. Vanilla Debug Options (F3 + F6) still control visibility, including Always On; reduced debug information and charts are left to vanilla.
+A small client-side Fabric mod that gives vanilla debug entries fixed columns and a classic order. Entry order, side assignments, per-group blank rows, empty target groups and help-footer spacing follow OptiFine 1.21.11 J9. Vanilla FPS measurements are retained. Vanilla Debug Options (F3 + F6) still control visibility, including Always On; reduced debug information and charts are left to vanilla.
 
 ## Install
 
@@ -20,7 +20,7 @@ The five target versions have passed builds and real Fabric/Mixin transformation
 
 - Left: version, combined FPS/performance/GPU line, TPS, renderer counters; position, section and speed, light, heightmaps, biome, difficulty and day count; generation, spawn and sound information.
 - Right: memory and system information, then targeted block, fluid and entity information. Newer versions' separate tag entries stay with their corresponding target.
-- Unknown mod entries: retained at the end of the left column, ordered by full identifier. No text is discarded.
+- Unknown mod entries: placed in the right column before indexed entries. Equal-rank entries retain the original enabled-list order, matching J9. No text is discarded.
 
 This mod changes placement, not which entries are enabled. To show additional information, use F3 + F6. Existing visibility choices are preserved.
 
@@ -36,7 +36,7 @@ $env:JAVA_HOME='C:\Program Files\Java\jdk-25.0.1'
 .\gradlew.bat :1.21.11:runClient
 ```
 
-`buildAll` produces five installable jars in `build/libs`. `layoutTest` checks 2,048 visibility combinations, shuffled ordering, grouped output, merged FPS lines, footer handling and frame reset. `probeAll` loads the actual transformed game overlay under Fabric in all five versions, then exits before opening a window. The test-only probe is excluded from release jars.
+`buildAll` produces five installable jars in `build/libs`. `layoutTest` checks 2,048 complete row-for-row visibility fixtures, shuffled ordering, leading/trailing blanks, empty and repeated groups, merged FPS lines, unknown-entry ordering, exact footer handling and modern tags. `probeAll` loads the actual transformed game overlay and entry list under Fabric in all five versions, then exits before opening a window. The test-only probe is excluded from release jars.
 
 Shared layout rules live in `src/shared/java`; the version-adapted mixin template is in `src/client-template`. Generated version sources live under each version's ignored build directory. `docs/INVESTIGATION.md` records the vanilla and locally supplied OptiFine investigation. OptiFine is a reference only and is excluded from Git and release archives.
 
