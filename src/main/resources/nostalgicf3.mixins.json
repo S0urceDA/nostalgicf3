@@ -2,6 +2,6 @@
   "required": true,
   "package": "dev.nostalgicf3.mixin",
   "compatibilityLevel": "JAVA_${java}",
-  "client": ["DebugScreenOverlayMixin", "DebugScreenEntryListMixin", "DebugEntryPositionMixin"${extraMixins}],
+  "client": ["DebugScreenOverlayMixin", "DebugScreenEntryListMixin", "DebugEntryPositionMixin", "DebugEntryParticleRenderStatsMixin"${extraMixins}],
   "injectors": {"defaultRequire": 1}
 }

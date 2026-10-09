@@ -74,3 +74,13 @@ The preserved old implementation is test-only. Existing 2,048 fixtures and 12,00
 The packaged 0.1.7+mc1.21.10 jar passed real Fabric/Mixin and collector probes on Minecraft 1.21.9 with Loader 0.17.3 and Java 21. The same packaged 0.1.7+mc26.1.2 jar passed on both 26.1 and 26.1.1 with Loader 0.18.4 and Java 25. All hooks were transformed and the collector forwarding, grouping, reset and lazy-empty paths passed. The tested mod jars were not rebuilt against the earlier games. Loom remaps the legacy packaged jar into the earlier game's named development namespace; the unobfuscated 26.x jar is loaded directly. These are automated compatibility checks, not additional in-world visual tests.
 
 The isolated `compatibility-tests` build consumes jars from `build/libs`, derives their version and Loader baselines from the main gradle.properties, and shares the existing probe sources. Run the root buildAll first, then `gradlew -p compatibility-tests verifyAll`. CI now repeats these three earlier-version checks after the five target builds and probes. No additional release jar targets are introduced.
+
+## Restored total-entity counter
+
+The official 1.21.8 client DebugScreenOverlay used the format `P: <particles>. T: <total entities>` and called ClientLevel.getEntityCount() for T. Restore that suffix by modifying only DebugEntryParticleRenderStats.display's emitted line. It reads the same client-side entity-storage count in all supported versions and follows particle_render_stats visibility. No server count, entity scan, standalone entry or configuration is introduced. A new test-only probe invokes the transformed hook with actual client entity storage for zero, changing positive counts and absent-level behavior.
+
+Verification: all five builds, 2,048 layout fixtures and 12,000 parity comparisons passed. The new transformed counter probe and existing hook/collector probes passed on all eight supported Minecraft versions at the declared minimum Loader versions. Release jars contain the counter mixin, icon and public metadata, and exclude all probe classes.
+
+### Singleplayer total-counter correction
+
+An in-world singleplayer check exposed that DebugScreenOverlay.getLevel() supplies the integrated server's ServerLevel to debug entries. The initial particle hook accepted only ClientLevel arguments and therefore omitted T in singleplayer. Read Minecraft.getInstance().level directly, matching the original counter's client-world source and making it independent of the debug-entry world argument. The regression probe now binds a test Minecraft instance and changes its client-world entity storage and level lifecycle, restoring the original instance in finally.

@@ -33,4 +33,4 @@ Run `gradlew layoutBenchmark --no-daemon` to repeat. The benchmark is opt-in and
 - 12,000 randomized complete-row comparisons match the preserved 0.1.6 implementation. They include changing visibility across reused frames, repeated entry output, empty/merged mod groups, footer variants and Unicode whitespace.
 - All five release targets build with existing Loader and Java requirements.
 - Real Fabric probes transform every hook and exercise the reused collector on every target: known capture, unknown priority/ordinary forwarding, named group merging, reset, collector identity, cleared displayer references and the lazy empty-overlay path.
-- Test references, benchmark code and constructor-free probe helpers are excluded from release jars. Full mod-pack visual confirmation and an in-game FPS profile remain separate checks before calling this 1.0.0.
+- Test references, benchmark code and constructor-free probe helpers are excluded from release jars. The layout has been visually tested by the user in game. No in-game FPS improvement is claimed; the benchmark measures layout assembly only.

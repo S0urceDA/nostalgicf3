@@ -13,6 +13,7 @@ Use vanilla **Debug Options (F3 + F6)** to choose what appears. Nostalgic F3 has
 - Keeps game and world information on the left, and memory, system specifications, and targeted objects on the right.
 - Combines FPS, performance information, and GPU utilization into one neatly spaced line.
 - Restores section-relative coordinates on the Block line.
+- Restores the total-entity `T:` counter after particles, controlled by the vanilla particle entry.
 - Groups target information and tags together, without gaps for empty targets.
 - Keeps memory and mod information separated, without hardcoding individual mods.
 - Fixes the rendered entity counter on Minecraft 1.21.x.
@@ -37,7 +38,7 @@ This is a **client-only** mod. Servers do not need it.
 | 26.2 | 26.2 | 0.18.4 | 25 |
 | 26.3 | 26.3 | 0.18.4 | 25 |
 
-**Release downloads are not published yet.** Until the first release, build from source using the instructions below. When available, jars will be listed on the [Releases page](https://github.com/S0urceDA/nostalgicf3/releases).
+Download the matching jar from the [1.0.0 release](https://github.com/S0urceDA/nostalgicf3/releases/tag/v1.0.0), or build from source using the instructions below.
 
 ## Building
 
