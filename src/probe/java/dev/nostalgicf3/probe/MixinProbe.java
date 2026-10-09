@@ -29,6 +29,10 @@ public final class MixinProbe implements PreLaunchEntrypoint {
                     ? "net.minecraft.client.gui.Gui" : "net.minecraft.client.renderer.GameRenderer", "beforeMenus", "skipLateOverlay");
             check("net.minecraft.client.gui.components.debug.DebugEntryParticleRenderStats", "totalEntities");
             check("net.minecraft.client.gui.font.FontManager", "invalidateWidths");
+            check("net.minecraft.client.gui.components.debugchart.AbstractDebugChart", "batchChart");
+            check(version.startsWith("1.") ? "net.minecraft.client.gui.render.state.GuiRenderState"
+                    : "net.minecraft.client.renderer.state.gui.GuiRenderState", "collectChartRectangles", "flushChartRectangles");
+            ChartBatchProbe.verify(version);
             ParticleCounterProbe.verify();
             CollectorProbe.verify(overlay);
             System.out.println("NOSTALGICF3_MIXIN_PROBE_OK: overlay, ordering, coordinates, menu placement and applicable entity-counter hooks transformed successfully.");

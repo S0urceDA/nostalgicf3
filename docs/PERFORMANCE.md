@@ -42,3 +42,11 @@ The overlay now caches measured line widths, including lines from other mods. Va
 The cache belongs to each overlay and retains at most 512 strings. It clears on capacity, font replacement, resource-pack font reload and font-option updates. GUI resizing and scale changes continue to use vanilla positioning; measured widths are in GUI units. Font-manager invalidation hooks and both width call sites are verified by actual Mixin transformation on all supported games.
 
 This removes repeated font-width traversal, not glyph preparation, GUI ordering or GPU submission. It remains compatible with Sodium Extra's cached strings. It does not bypass vanilla drawing or assume a fixed font/resource pack. No in-game FPS gain is claimed without profiling. Prepared-text/geometry caching remains a separate possible optimization requiring additional renderer compatibility work.
+
+## Debug graph batching (development, version remains 1.0.0)
+
+User Spark captures identified graph-bar GUI overlap searches as the dominant debug-overlay cost. The chart extractor now groups consecutive compatible vanilla colored rectangles into a single GUI element. It retains the exact vanilla vertex emitters, rectangle order, colors, poses and scissor state. The combined conservative bounds participate in normal GUI layer placement once per batch instead of once per rectangle.
+
+Batching is confined to AbstractDebugChart drawing/extraction, covering the FPS, tick, ping and bandwidth bar charts. Text, items, other element types, pipeline/texture/scissor changes and explicit GUI layer transitions flush pending rectangles first. Nested charts flush the parent and restore it afterward; a finally block closes the scope even if chart extraction fails. Submitted batches own immutable snapshots so later chart extraction cannot mutate queued geometry. The profiler pie chart and sampling/aggregation/statistics are unchanged.
+
+Runtime regression probes compare all emitted vertex calls against vanilla for 500 rectangles and verify that the real transformed GUI receives one batch, then resumes ordinary submission outside the chart. This checks geometry and submission reduction, not in-game FPS or a complete rasterized visual comparison. No measured FPS improvement is claimed until the user tests the updated jar with their mod set.
