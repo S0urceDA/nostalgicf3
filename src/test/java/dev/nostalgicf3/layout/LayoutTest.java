@@ -84,6 +84,22 @@ public final class LayoutTest {
         equal(new ClassicLayout.Frame().column(LEFT, List.of("Third-party priority", "", "Charts")),
                 List.of("Third-party priority", "", "Charts"));
         equal(ClassicLayout.isKnown("other:memory"), false);
+        ClassicLayout.Frame modGroups = new ClassicLayout.Frame();
+        add(modGroups, "system_specs", "Java");
+        modGroups.captureUnknownGroup("example:group", List.of("Mod A"));
+        modGroups.captureUnknownGroup("example:empty", List.of());
+        modGroups.captureUnknownGroup("example:group", List.of("Mod B"));
+        modGroups.captureUnknownGroup("another:group", List.of("Mod C"));
+        equal(modGroups.column(RIGHT, List.of("Priority", "")),
+                List.of("Java", "Priority", "", "Mod A", "Mod B", "", "Mod C", ""));
+        equal(modGroups.column(LEFT, List.of("Fabric renderer", "", "Debug charts: hints")),
+                List.of("Fabric renderer", "", "Debug charts: hints"));
+        ClassicLayout.Frame spacing = new ClassicLayout.Frame();
+        add(spacing, "fps", "60 fps vsync ");
+        add(spacing, "simple_performance_impactors", " fancy-clouds B: 5", "Filtering: None");
+        add(spacing, "gpu_utilization", " GPU: 50%");
+        equal(spacing.column(LEFT, List.of("", "Debug charts: hints")),
+                List.of("60 fps vsync fancy-clouds B: 5 Filtering: None GPU: 50%", "", "Debug charts: hints"));
         equal(ClassicLayout.relativePosition("Block: -1 -17 16", -1, -17, 16), "Block: -1 -17 16 [15 15 0]");
         equal(ClassicLayout.relativePosition("Block: 0 15 31", 0, 15, 31), "Block: 0 15 31 [0 15 15]");
         System.out.println("Layout checks passed: 2048 visibility fixtures, modern placement, empty/repeated targets, disabled FPS/difficulty, memory spacing, vanilla remainder, and negative relative coordinates.");

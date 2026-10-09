@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.nostalgicf3.layout.ClassicLayout;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.resources.@ID@;
@@ -26,10 +25,9 @@ import java.util.List;
 abstract class DebugScreenOverlayMixin {
     @Unique private ClassicLayout.Frame nostalgicf3$frame;
 
-    @Inject(method = "@RENDER@", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "@RENDER@", at = @At("HEAD"))
     private void nostalgicf3$beginFrame(CallbackInfo ci) {
         nostalgicf3$frame = new ClassicLayout.Frame();
-        if (Minecraft.getInstance().@HIDDEN@) ci.cancel();
     }
 
     @WrapOperation(method = "@RENDER@", at = @At(value = "INVOKE", target =
@@ -37,23 +35,33 @@ abstract class DebugScreenOverlayMixin {
     private void nostalgicf3$captureEntry(DebugScreenEntry entry, DebugScreenDisplayer vanilla,
             Level level, LevelChunk clientChunk, LevelChunk serverChunk, Operation<Void> original,
             @Local @ID@ id) {
-        if (!ClassicLayout.isKnown(id.toString())) {
-            original.call(entry, vanilla, level, clientChunk, serverChunk);
-            return;
-        }
+        boolean known = ClassicLayout.isKnown(id.toString());
         List<ClassicLayout.Event> events = new ArrayList<>();
         DebugScreenDisplayer capture = new DebugScreenDisplayer() {
-            public void addPriorityLine(String line) { events.add(ClassicLayout.Event.line(line)); }
-            public void addLine(String line) { events.add(ClassicLayout.Event.line(line)); }
+            public void addPriorityLine(String line) {
+                if (known) events.add(ClassicLayout.Event.line(line)); else vanilla.addPriorityLine(line);
+            }
+            public void addLine(String line) {
+                if (known) events.add(ClassicLayout.Event.line(line)); else vanilla.addLine(line);
+            }
             public void addToGroup(@ID@ group, Collection<String> groupLines) {
-                events.add(ClassicLayout.Event.group(new ArrayList<>(groupLines)));
+                if (known) events.add(ClassicLayout.Event.group(new ArrayList<>(groupLines)));
+                else nostalgicf3$frame.captureUnknownGroup(group.toString(), new ArrayList<>(groupLines));
             }
             public void addToGroup(@ID@ group, String line) {
-                events.add(ClassicLayout.Event.group(List.of(line)));
+                addToGroup(group, List.of(line));
             }
         };
         original.call(entry, capture, level, clientChunk, serverChunk);
-        nostalgicf3$frame.capture(id.toString(), events);
+        if (known) nostalgicf3$frame.capture(id.toString(), events);
+    }
+
+    @WrapOperation(method = "@RENDER@", at = {
+            @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0),
+            @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 2)})
+    private boolean nostalgicf3$skipRedundantSeparator(List<?> list, Object line, Operation<Boolean> original) {
+        // Vanilla adds these around balanced text; fixed columns need only the chart-hint separator.
+        return true;
     }
 
     @ModifyArg(method = "@RENDER@", at = @At(value = "INVOKE", target =

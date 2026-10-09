@@ -9,7 +9,7 @@ public final class MixinProbe implements PreLaunchEntrypoint {
         try {
             Class<?> overlay = Class.forName("net.minecraft.client.gui.components.DebugScreenOverlay", false,
                     Thread.currentThread().getContextClassLoader());
-            for (String hook : new String[]{"beginFrame", "captureEntry", "left", "right"}) {
+            for (String hook : new String[]{"beginFrame", "captureEntry", "left", "right", "skipRedundantSeparator"}) {
                 if (Arrays.stream(overlay.getDeclaredMethods()).noneMatch(m -> m.getName().contains("nostalgicf3$" + hook))) {
                     throw new AssertionError("Missing transformed overlay hook: " + hook);
                 }

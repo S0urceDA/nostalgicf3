@@ -50,6 +50,10 @@ public final class ClassicLayout {
 
     public static final class Frame {
         private final Map<String, List<Event>> entries = new LinkedHashMap<>();
+        private final Map<String, List<String>> unknownGroups = new LinkedHashMap<>();
+        public void captureUnknownGroup(String group, List<String> lines) {
+            unknownGroups.computeIfAbsent(group, ignored -> new ArrayList<>()).addAll(lines);
+        }
         public void capture(String id, List<Event> events) {
             entries.computeIfAbsent(id, ignored -> new ArrayList<>()).addAll(events);
         }
@@ -71,7 +75,7 @@ public final class ClassicLayout {
                 for (String line : lines) {
                     if (PERFORMANCE.contains(id)) {
                         if (fpsIndex >= 0) {
-                            result.set(fpsIndex, result.get(fpsIndex) + " " + line);
+                            result.set(fpsIndex, result.get(fpsIndex).stripTrailing() + " " + line.stripLeading());
                             continue;
                         }
                         fpsIndex = result.size();
@@ -81,11 +85,18 @@ public final class ClassicLayout {
                         continue;
                     }
                     if (id.equals("minecraft:local_difficulty")) difficultyIndex = result.size();
-                    result.add(line);
+                    result.add(PERFORMANCE.contains(id) ? line.stripLeading() : line);
                 }
                 memoryBlock |= memory;
             }
             result.addAll(vanillaRemainder);
+            if (side == Side.RIGHT) {
+                for (List<String> group : unknownGroups.values()) {
+                    if (group.isEmpty()) continue;
+                    result.addAll(group);
+                    result.add("");
+                }
+            }
             return result;
         }
     }
