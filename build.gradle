@@ -1,82 +1,73 @@
 plugins {
-	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
-	id 'maven-publish'
+    id 'java'
+    id 'net.fabricmc.fabric-loom-remap' version '1.18.3' apply false
+    id 'net.fabricmc.fabric-loom' version '1.18.3' apply false
 }
-
-repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+group = 'dev.nostalgicf3'
+version = project.mod_version
+java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+sourceSets.main.java.srcDirs = ['src/shared/java']
+tasks.register('layoutTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.nostalgicf3.layout.LayoutTest'
 }
-
-loom {
-	splitEnvironmentSourceSets()
-
-	mods {
-		"modid" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
-	}
+tasks.check.dependsOn layoutTest
+tasks.register('buildAll') {
+    dependsOn layoutTest
+    dependsOn subprojects.collect { "${it.path}:build" }
 }
-
-dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-}
-
-processResources {
-	def version = project.version
-	inputs.property "version", version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
-}
-
-java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
-	withSourcesJar()
-
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
-}
-
-jar {
-	def projectName = project.name
-	inputs.property "projectName", projectName
-
-	from("LICENSE") {
-		rename { "${it}_$projectName"}
-	}
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			from components.java
-		}
-	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
-	}
+subprojects {
+    def mc = project.name
+    def legacy = mc.startsWith('1.')
+    apply plugin: legacy ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
+    group = rootProject.group
+    version = "${rootProject.version}+mc${mc}"
+    base { archivesName = 'nostalgicf3' }
+    repositories { mavenCentral() }
+    dependencies {
+        minecraft "com.mojang:minecraft:${mc}"
+        if (legacy) mappings loom.officialMojangMappings()
+        implementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    }
+    java { toolchain { languageVersion = JavaLanguageVersion.of(25) }; withSourcesJar() }
+    tasks.withType(JavaCompile).configureEach { options.release = legacy ? 21 : 25 }
+    def generated = layout.buildDirectory.dir('generated/sources/client')
+    tasks.register('generateVersionSources') {
+        inputs.dir rootProject.file('src/client-template')
+        inputs.property 'minecraftVersion', mc
+        outputs.dir generated
+        doLast {
+            rootProject.file('src/client-template').eachFileRecurse { input ->
+                if (input.isFile()) {
+                    def relative = rootProject.file('src/client-template').toPath().relativize(input.toPath()).toString()
+                    def output = new File(generated.get().asFile, relative)
+                    output.parentFile.mkdirs()
+                    output.text = input.getText('UTF-8')
+                        .replace('@ID@', mc == '1.21.10' ? 'ResourceLocation' : 'Identifier')
+                        .replace('@RENDER@', legacy ? 'render' : 'extractRenderState')
+                        .replace('@LINES@', legacy ? 'renderLines' : 'extractLines')
+                        .replace('@GRAPHICS@', legacy ? 'GuiGraphics' : 'GuiGraphicsExtractor')
+                }
+            }
+        }
+    }
+    sourceSets.main.java.srcDirs = [rootProject.file('src/shared/java'), generated]
+    sourceSets.main.resources.srcDirs = [rootProject.file('src/main/resources')]
+    tasks.compileJava.dependsOn generateVersionSources
+    tasks.sourcesJar.dependsOn generateVersionSources
+    tasks.processResources {
+        def range = mc == '1.21.10' ? '>=1.21.9 <=1.21.10' : mc == '26.1.2' ? '>=26.1 <=26.1.2' : mc
+        inputs.property 'minecraftRange', range
+        inputs.property 'modVersion', project.version
+        filesMatching('fabric.mod.json') { expand(version: project.version, minecraft: range, java: legacy ? 21 : 25) }
+        filesMatching('nostalgicf3.mixins.json') { expand(java: legacy ? 21 : 25) }
+    }
+    tasks.register('collectJar', Copy) {
+        def artifact = tasks.named(legacy ? 'remapJar' : 'jar')
+        dependsOn artifact
+        from artifact.flatMap { it.archiveFile }
+        into rootProject.layout.buildDirectory.dir('libs')
+    }
+    tasks.build.finalizedBy collectJar
 }

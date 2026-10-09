@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "dev.nostalgicf3.mixin",
+  "compatibilityLevel": "JAVA_${java}",
+  "client": ["DebugScreenOverlayMixin"],
+  "injectors": {"defaultRequire": 1}
+}
