@@ -44,3 +44,11 @@ Menu rendering moves before screen/overlay rendering. 1.21.x hooks GameRenderer.
 
 Verification: 2,048 visibility combinations and focused modern-placement, empty/repeated-target, disabled-FPS/difficulty, memory-separator, unknown-ID/remainder and negative-coordinate tests passed. All five builds passed. Expanded real loader probes transformed every added mixin target under the existing minimum Loader versions. These probes confirm injection compatibility, not a visual or in-world behavior test.
 
+
+## 0.1.4: generic mod groups, spacing and default F1 behavior
+
+Unknown entries now forward priority/ordinary lines to vanilla but collect named groups independently by group identifier. Those groups appear on the right after known entries and vanilla priority/ordinary output, with one trailing separator per nonempty group. No mod IDs are hardcoded. This matches the reference's group-versus-priority distinction, including Fabric renderer information using priority output.
+
+FPS additions strip boundary whitespace and join with exactly one space. The two vanilla separators around left priority/regular text are suppressed, leaving the existing chart-hint separator. The forced F1 cancellation from 0.1.3 is removed at the user's request: Better Vanilla F3 defaults that option off. Optional forced day-count and profiler customization remain absent.
+
+All five builds and expanded real loader probes passed on the existing minimum Loader versions. Regression fixtures cover unknown groups sharing identifiers, empty groups, priority remainder, FPS whitespace and chart-hint spacing alongside the existing 2,048 visibility checks. Visual confirmation in a running world remains a separate check.

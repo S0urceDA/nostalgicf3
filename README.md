@@ -1,6 +1,6 @@
 # Nostalgic F3
 
-A small client-side Fabric mod that gives vanilla debug entries fixed columns and a familiar order. Version 0.1.3 adopts the config-free layout and fixes requested after comparing Better Vanilla F3. Vanilla Debug Options (F3 + F6) still control visibility, including Always On. There is no configuration file, Fabric API requirement, or configuration library.
+A small client-side Fabric mod that gives vanilla debug entries fixed columns and a familiar order. Version 0.1.4 adopts the config-free layout and fixes requested after comparing Better Vanilla F3. Vanilla Debug Options (F3 + F6) still control visibility, including Always On. There is no configuration file, Fabric API requirement, or configuration library.
 
 ## Install
 
@@ -23,9 +23,9 @@ All five targets passed builds and real Fabric/Mixin transformation probes. Adja
 - Day count joins local difficulty when both entries are visible. With difficulty disabled, day count remains a separate left-column line. Performance information likewise remains visible with FPS disabled.
 - The Block line includes the old section-relative `[x y z]` coordinates. The separate section-position entry is retained.
 - Empty targets produce no blank gaps; repeated group outputs share one separator. Memory has one separator before the next visible section, even with system specs disabled.
-- F3 draws behind menus, except on the Debug Options screen. F1 hides the overlay even while a menu is open.
+- F3 draws behind menus, except on the Debug Options screen. F1 visibility retains vanilla behavior, matching Better Vanilla F3's default.
 - On 1.21.x, the rendered entity counter uses the previous completed frame's count before vanilla clears it.
-- Unknown third-party entries use vanilla's routing and retain vanilla ordering among themselves.
+- Unknown third-party groups go to the right without mod-specific IDs. Priority lines and ordinary lines retain vanilla routing; entries retain vanilla ordering among themselves.
 
 Existing entry visibility choices and reduced debug information remain controlled by vanilla. Vanilla measurements are retained; OptiFine-specific minimum-FPS and chunk-update counters are not added. Profiler pie scale and background keep vanilla defaults.
 
