@@ -12,9 +12,20 @@ tasks.register('layoutTest', JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'dev.nostalgicf3.layout.LayoutTest'
 }
-tasks.check.dependsOn layoutTest
+tasks.register('layoutParityTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.nostalgicf3.layout.LayoutParityTest'
+}
+tasks.register('layoutBenchmark', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.nostalgicf3.layout.LayoutBenchmark'
+    jvmArgs '-Xms256m', '-Xmx512m'
+}
+tasks.check.dependsOn layoutTest, layoutParityTest
 tasks.register('buildAll') {
-    dependsOn layoutTest
+    dependsOn layoutTest, layoutParityTest
     dependsOn subprojects.collect { "${it.path}:build" }
 }
 subprojects {
@@ -53,7 +64,6 @@ subprojects {
                         .replace('@RENDER@', legacy ? 'render' : 'extractRenderState')
                         .replace('@GUI_METHOD@', legacy ? 'render' : 'extractGui')
                         .replace('@DEBUG_METHOD@', legacy ? 'renderDebugOverlay' : 'extractDebugOverlay')
-                        .replace('@HIDDEN@', newerGui ? 'gui.hud.isHidden()' : 'options.hideGui')
                         .replace('@LINES@', legacy ? 'renderLines' : 'extractLines')
                         .replace('@GRAPHICS@', legacy ? 'GuiGraphics' : 'GuiGraphicsExtractor').replace('@EXTRA_ARG@', mc == '26.3' ? 'I' : '')
                 }

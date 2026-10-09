@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import static dev.nostalgicf3.layout.ClassicLayout.Side.*;
-import static dev.nostalgicf3.layout.ClassicLayout.Event.*;
 
 public final class LayoutTest {
     private static void equal(Object actual, Object expected) {
         if (!actual.equals(expected)) throw new AssertionError("Expected " + expected + " but got " + actual);
     }
     private static void add(ClassicLayout.Frame frame, String id, String... lines) {
-        frame.capture("minecraft:" + id, List.of(group(List.of(lines))));
+        frame.addLines(ClassicLayout.indexOf("minecraft:" + id), List.of(lines));
     }
     public static void main(String[] args) {
         List<String> ids = List.of("game_version", "fps", "tps", "chunk_render_stats", "player_position",
@@ -59,7 +58,9 @@ public final class LayoutTest {
         equal(day.column(LEFT, List.of()), List.of("Biome", "Local Difficulty: 2.0 (Day 42)"));
 
         ClassicLayout.Frame targets = new ClassicLayout.Frame();
-        targets.capture("minecraft:looking_at_block_state", List.of(group(List.of()), group(List.of("Block")), group(List.of("State"))));
+        add(targets, "looking_at_block_state");
+        add(targets, "looking_at_block_state", "Block");
+        add(targets, "looking_at_block_state", "State");
         add(targets, "looking_at_block_tags", "#tag");
         add(targets, "looking_at_fluid_state");
         add(targets, "looking_at_fluid_tags");

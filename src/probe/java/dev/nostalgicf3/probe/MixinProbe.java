@@ -27,6 +27,7 @@ public final class MixinProbe implements PreLaunchEntrypoint {
             }
             check(version.startsWith("26.2") || version.startsWith("26.3")
                     ? "net.minecraft.client.gui.Gui" : "net.minecraft.client.renderer.GameRenderer", "beforeMenus", "skipLateOverlay");
+            CollectorProbe.verify(overlay);
             System.out.println("NOSTALGICF3_MIXIN_PROBE_OK: overlay, ordering, coordinates, menu placement and applicable entity-counter hooks transformed successfully.");
             System.exit(0);
         } catch (Throwable failure) {
