@@ -1,10 +1,10 @@
 # Nostalgic F3
 
-A small client-side Fabric mod that gives vanilla debug entries fixed columns and a classic order. Entry order, side assignments, per-group blank rows, empty target groups and help-footer spacing follow OptiFine 1.21.11 J9 and the supplied 26.2 K2 pre1 layout rules. Vanilla FPS measurements are retained. Vanilla Debug Options (F3 + F6) still control visibility, including Always On; reduced debug information and charts are left to vanilla.
+A small client-side Fabric mod that gives vanilla debug entries fixed columns and a familiar order. Version 0.1.3 adopts the config-free layout and fixes requested after comparing Better Vanilla F3. Vanilla Debug Options (F3 + F6) still control visibility, including Always On. There is no configuration file, Fabric API requirement, or configuration library.
 
 ## Install
 
-Use Fabric Loader 0.17.3 or newer on 1.21.x, or 0.18.4 or newer on 26.x. These older baselines passed the real loader probes; the latest Loader is not required. Choose **one** JAR matching your Minecraft version from `build/libs`, and put it in that game's `mods` folder. Fabric API is not required. The server does not need this mod.
+Use Fabric Loader 0.17.3 or newer on 1.21.x, or 0.18.4 or newer on 26.x. Choose **one** matching JAR from `build/libs` and put it in the game's `mods` folder. The server does not need this mod.
 
 | JAR target | Declared compatible Minecraft versions | Game Java |
 | --- | --- | --- |
@@ -14,35 +14,37 @@ Use Fabric Loader 0.17.3 or newer on 1.21.x, or 0.18.4 or newer on 26.x. These o
 | 26.2 | 26.2 | 25+ |
 | 26.3 | 26.3 | 25+ |
 
-The five target versions have passed builds and real Fabric/Mixin transformation probes. The adjacent patch versions are declared compatible but were not launched separately. An in-world visual check remains to be done.
+All five targets passed builds and real Fabric/Mixin transformation probes. Adjacent patch versions are declared compatible but were not launched separately. The probes do not replace an in-world visual check.
 
-## Layout
+## Behavior
 
-- Left: version, combined FPS/performance/GPU line, TPS, renderer counters; position, section and speed, light, heightmaps, biome and difficulty; generation, spawn and sound information.
-- Right: memory and system information, then targeted block, fluid and entity information. Block/fluid tag groups have their own blank rows. Following the 26.2 preview, detailed memory, entity tags, day count and sound cache follow targeted entity on the right.
-- Unknown mod entries: placed in the right column before indexed entries. Equal-rank entries retain the original enabled-list order, matching J9. No text is discarded.
+- Left: version; FPS, performance impactors and GPU on one line; TPS and renderer counters; position, section, speed, lighting, heightmaps, biome and difficulty; generation, spawn and sound information.
+- Right: memory and detailed memory together, then system information; targeted block, fluid and entity information, with tags directly alongside each target.
+- Day count joins local difficulty when both entries are visible. With difficulty disabled, day count remains a separate left-column line. Performance information likewise remains visible with FPS disabled.
+- The Block line includes the old section-relative `[x y z]` coordinates. The separate section-position entry is retained.
+- Empty targets produce no blank gaps; repeated group outputs share one separator. Memory has one separator before the next visible section, even with system specs disabled.
+- F3 draws behind menus, except on the Debug Options screen. F1 hides the overlay even while a menu is open.
+- On 1.21.x, the rendered entity counter uses the previous completed frame's count before vanilla clears it.
+- Unknown third-party entries use vanilla's routing and retain vanilla ordering among themselves.
 
-This mod changes placement, not which entries are enabled. To show additional information, use F3 + F6. Existing visibility choices are preserved.
+Existing entry visibility choices and reduced debug information remain controlled by vanilla. Vanilla measurements are retained; OptiFine-specific minimum-FPS and chunk-update counters are not added. Profiler pie scale and background keep vanilla defaults.
 
 ## Develop (Windows)
 
-Open this folder as a Gradle project. Building requires JDK 25, and development launches for 1.21.x use JDK 21. All shipped mod classes target Java 21 bytecode; Minecraft 26.x itself still requires Java 25. If Gradle does not find your installed JDKs, set JAVA_HOME_21_X64/JAVA_HOME_25_X64, or provide -Porg.gradle.java.installations.paths with the comma-separated installation folders.
+Building uses JDK 25; 1.21.x development launches use JDK 21. All shipped mod classes target Java 21 bytecode. Minecraft 26.x itself requires Java 25. If Gradle does not find your JDKs, set JAVA_HOME_21_X64/JAVA_HOME_25_X64 or supply `-Porg.gradle.java.installations.paths` with comma-separated installation folders.
 
 ```powershell
 $env:JAVA_HOME='C:\Program Files\Java\jdk-25.0.1'
-.\gradlew.bat buildAll --no-daemon
-.\gradlew.bat layoutTest --no-daemon
-.\gradlew.bat probeAll --no-daemon
-.\gradlew.bat :1.21.11:runClient
+.\gradlew.bat buildAll probeAll --no-daemon
+.\gradlew.bat :26.3:runClient
 ```
 
-`buildAll` produces five installable jars in `build/libs`. `layoutTest` checks 2,048 complete row-for-row visibility fixtures, shuffled ordering, leading/trailing blanks, empty and repeated groups, merged FPS lines, unknown-entry ordering, exact footer handling and modern tags. `probeAll` loads the actual transformed game overlay and entry list under Fabric in all five versions, then exits before opening a window. The test-only probe is excluded from release jars.
+`buildAll` produces five installable jars in `build/libs`. `layoutTest` checks 2,048 visibility combinations plus modern placement, absent FPS/difficulty, empty and repeated targets, memory spacing, vanilla remainder preservation and negative relative coordinates. `probeAll` forces the actual game classes through Fabric/Mixin and checks overlay, ordering, position, menu rendering and applicable entity-counter hooks, then exits without a game window. Its test mod is excluded from release jars.
 
-Shared layout rules live in `src/shared/java`; the version-adapted mixin template is in `src/client-template`. Generated version sources live under each version's ignored build directory. `docs/INVESTIGATION.md` records the vanilla and locally supplied OptiFine investigation. OptiFine is a reference only and is excluded from Git and release archives.
+Shared layout rules live in `src/shared/java`; version-adapted mixin templates are in `src/client-template`. Generated sources live under each version's ignored build directory. `docs/INVESTIGATION.md` records decisions and verification. The historical OptiFine layout was superseded by the user's requested Better Vanilla F3 behavior in 0.1.3.
 
-Git history records the starter, multi-version setup, layout implementation, compatibility fixes and loader tests as separate commits.
+Git history records layout changes, rendering fixes and release documentation separately.
 
 Project location: `C:\Users\andra\AppData\Roaming\.minecraft\e\nostalgicf3`.
 
-License: CC0-1.0, inherited from the Fabric starter. No Minecraft or OptiFine binaries/source are distributed.
-Version 0.1.2 matches the supplied 26.2 preview's fallback layout as written. Player speed, absent from that preview, retains its established left-column placement on 26.3. Vanilla measurements remain unchanged.
+License: CC0-1.0, inherited from the Fabric starter. Reference behavior was independently implemented; no Minecraft, OptiFine or Better Vanilla F3 source/binaries are distributed.

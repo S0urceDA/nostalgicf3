@@ -31,3 +31,16 @@ Inspected preview_OptiFine_26.2_HD_U_K2_pre1.jar supplied by the user. Its expli
 Lowered minimum Fabric Loader from 0.19.5 to 0.17.3 for 1.21.x and 0.18.4 for 26.x. Both legacy targets passed transformation probes on Java 21 with Loader 0.17.3; all three modern targets passed on Java 25 with Loader 0.18.4. All mod classes and the mixin compatibility declaration target Java 21. Minecraft 26.x's own Java 25 runtime requirement remains. Fabric API and external configuration libraries are not required.
 
 Tests include the exact K2 pre1 right-column row sequence and tag separators, alongside the 2,048 visibility fixtures and five version probes. Earlier sections describe historical decisions superseded by this update.
+
+## 0.1.3: config-free Better Vanilla F3 decisions
+
+The user designated the local bettervanillaf3 project as the definitive behavioral reference and requested its fixes without configuration. This supersedes the earlier exact OptiFine spacing and fallback placement. Implementation is independent; no reference implementation is copied or shipped.
+
+Detailed memory follows memory; sound cache follows sound mood on the left; entity tags stay beside entity information; block/fluid tags have no separate gaps. Day count joins the actual local-difficulty output, falling back to its own line if difficulty is disabled. Performance/GPU information remains visible with FPS disabled. Empty target groups add no separators, and repeated group calls receive one separator per entry. A visible memory block is separated from the next visible section regardless of which memory/system entries are disabled. Unknown IDs delegate to vanilla's displayer instead of being forced to a column; equal-rank identifiers retain the original comparator.
+
+The Block-line formatting hook restores section-relative coordinates using bit masking, including negative world coordinates. The separate section entry remains available. The pre-26.1 entity counter captures the previous frame's render-state size immediately before renderLevel resets it. Later versions retain their vanilla counter.
+
+Menu rendering moves before screen/overlay rendering. 1.21.x hooks GameRenderer.render, 26.1.2 hooks GameRenderer.extractGui, and 26.2/26.3 hook Gui.extractRenderState before its first overlay-field read. The old later call is suppressed to avoid duplicate output; DebugOptionsScreen remains excluded. F1 cancels overlay rendering regardless of menus: Options.hideGui through 26.1.2, Hud.isHidden() on 26.2/26.3. Optional pie scale/background controls retain vanilla defaults; no config or new dependency is added. Loader baselines remain 0.17.3/0.18.4, with Java 21 mod bytecode.
+
+Verification: 2,048 visibility combinations and focused modern-placement, empty/repeated-target, disabled-FPS/difficulty, memory-separator, unknown-ID/remainder and negative-coordinate tests passed. All five builds passed. Expanded real loader probes transformed every added mixin target under the existing minimum Loader versions. These probes confirm injection compatibility, not a visual or in-world behavior test.
+
