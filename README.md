@@ -1,50 +1,73 @@
+<p align="center">
+  <img src="src/main/resources/assets/nostalgicf3/icon.png" width="128" height="128" alt="Nostalgic F3 icon">
+</p>
+
 # Nostalgic F3
 
-A small client-side Fabric mod that gives vanilla debug entries fixed columns and a familiar order. Version 0.1.7 preserves the config-free layout and fixes requested after comparing Better Vanilla F3. Vanilla Debug Options (F3 + F6) still control visibility, including Always On. There is no configuration file, Fabric API requirement, or configuration library.
+A small client-side Fabric mod that restores the familiar Minecraft F3 layout: fixed columns, predictable ordering, and clean spacing, even when individual debug entries are disabled.
 
-## Install
+Use vanilla **Debug Options (F3 + F6)** to choose what appears. Nostalgic F3 has no configuration file and requires no Fabric API or configuration library.
 
-Use Fabric Loader 0.17.3 or newer on 1.21.x, or 0.18.4 or newer on 26.x. Choose **one** matching JAR from `build/libs` and put it in the game's `mods` folder. The server does not need this mod.
+## Features
 
-| JAR target | Declared compatible Minecraft versions | Game Java |
-| --- | --- | --- |
-| 1.21.10 | 1.21.9, 1.21.10 | 21+ |
-| 1.21.11 | 1.21.11 | 21+ |
-| 26.1.2 | 26.1, 26.1.1, 26.1.2 | 25+ |
-| 26.2 | 26.2 | 25+ |
-| 26.3 | 26.3 | 25+ |
+- Keeps game and world information on the left, and memory, system specifications, and targeted objects on the right.
+- Combines FPS, performance information, and GPU utilization into one neatly spaced line.
+- Restores section-relative coordinates on the Block line.
+- Groups target information and tags together, without gaps for empty targets.
+- Keeps memory and mod information separated, without hardcoding individual mods.
+- Fixes the rendered entity counter on Minecraft 1.21.x.
+- Shows F3 behind menus while retaining vanilla F1 behavior.
+- Gives newer vanilla entries consistent positions, including player speed in 26.3.
 
-All five targets passed builds and real Fabric/Mixin transformation probes. Adjacent patch versions are declared compatible but were not launched separately. The probes also exercise the actual transformed reusable collector, its forwarding and reset behavior. The probes do not replace an in-world visual check.
+Vanilla visibility settings, reduced debug information, measurements, charts, and keybinding hints are preserved. Performance information still works with FPS hidden, and day count can appear without local difficulty.
 
-## Behavior
+## Installation
 
-- Left: version; FPS, performance impactors and GPU on one line; TPS and renderer counters; position, section, speed, lighting, heightmaps, biome and difficulty; generation, spawn and sound information.
-- Right: memory and detailed memory together, then system information; targeted block, fluid and entity information, with tags directly alongside each target.
-- Day count joins local difficulty when both entries are visible. With difficulty disabled, day count remains a separate left-column line. Performance information likewise remains visible with FPS disabled.
-- The Block line includes the old section-relative `[x y z]` coordinates. The separate section-position entry is retained.
-- Empty targets produce no blank gaps; repeated group outputs share one separator. Memory has one separator before the next visible section, even with system specs disabled.
-- F3 draws behind menus, except on the Debug Options screen. F1 visibility retains vanilla behavior, matching Better Vanilla F3's default.
-- On 1.21.x, the rendered entity counter uses the previous completed frame's count before vanilla clears it.
-- Unknown third-party groups go to the right without mod-specific IDs. Priority lines and ordinary lines retain vanilla routing; entries retain vanilla ordering among themselves.
+1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for your Minecraft version.
+2. Download **one** matching Nostalgic F3 jar and place it in your Minecraft `mods` folder.
+3. Launch Minecraft with Fabric and open F3.
 
-Existing entry visibility choices and reduced debug information remain controlled by vanilla. Vanilla measurements are retained; OptiFine-specific minimum-FPS and chunk-update counters are not added. Profiler pie scale and background keep vanilla defaults.
+This is a **client-only** mod. Servers do not need it.
 
-## Develop (Windows)
+| Jar target | Supported Minecraft versions | Minimum Fabric Loader | Game Java |
+| --- | --- | --- | --- |
+| 1.21.10 | 1.21.9, 1.21.10 | 0.17.3 | 21 |
+| 1.21.11 | 1.21.11 | 0.17.3 | 21 |
+| 26.1.2 | 26.1, 26.1.1, 26.1.2 | 0.18.4 | 25 |
+| 26.2 | 26.2 | 0.18.4 | 25 |
+| 26.3 | 26.3 | 0.18.4 | 25 |
 
-Building uses JDK 25; 1.21.x development launches use JDK 21. All shipped mod classes target Java 21 bytecode. Minecraft 26.x itself requires Java 25. If Gradle does not find your JDKs, set JAVA_HOME_21_X64/JAVA_HOME_25_X64 or supply `-Porg.gradle.java.installations.paths` with comma-separated installation folders.
+**Release downloads are not published yet.** Until the first release, build from source using the instructions below. When available, jars will be listed on the [Releases page](https://github.com/S0urceDA/nostalgicf3/releases).
+
+## Building
+
+Install JDK 21 and JDK 25. Run Gradle with JDK 25; legacy development clients use JDK 21. If Gradle cannot find both installations, set `JAVA_HOME_21_X64` and `JAVA_HOME_25_X64`, or pass their paths through `-Porg.gradle.java.installations.paths`.
+
+Windows:
 
 ```powershell
-$env:JAVA_HOME='C:\Program Files\Java\jdk-25.0.1'
-.\gradlew.bat buildAll probeAll --no-daemon
-.\gradlew.bat :26.3:runClient
+.\gradlew.bat buildAll
 ```
 
-`layoutParityTest` is part of buildAll/check and compares 12,000 randomized frames against the test-only 0.1.6 reference. `buildAll` produces five installable jars in `build/libs`. `layoutTest` checks 2,048 visibility combinations plus modern placement, absent FPS/difficulty, empty and repeated targets, memory spacing, vanilla remainder preservation and negative relative coordinates. `probeAll` forces the actual game classes through Fabric/Mixin and checks overlay, ordering, position, menu rendering and applicable entity-counter hooks, then exits without a game window. Its test mod is excluded from release jars.
+Linux / macOS:
 
-Shared layout rules live in `src/shared/java`; version-adapted mixin templates are in `src/client-template`. Generated sources live under each version's ignored build directory. `docs/INVESTIGATION.md` records decisions and verification. The historical OptiFine layout was superseded by the user's requested Better Vanilla F3 behavior in 0.1.3.
+```sh
+chmod +x gradlew
+./gradlew buildAll
+```
 
-Version 0.1.7 refactors assembly into reusable indexed buffers and one collector. Output matches 0.1.6 in 12,000 randomized comparisons. The local stress benchmark measured about 83% less assembly time and 99% less allocation; this is not an in-game FPS result. See `docs/PERFORMANCE.md` for measurements and limits. Run `gradlew layoutBenchmark` to repeat. Git history records the behavior reference, optimization, tests and release documentation separately.
+The five installable jars are written to `build/libs`. To launch a development client, run `./gradlew :26.3:runClient` (or `gradlew.bat` on Windows), substituting another jar target if needed.
 
-Project location: `C:\Users\andra\AppData\Roaming\.minecraft\e\nostalgicf3`.
+`buildAll` includes layout regression checks and 12,000 randomized comparisons. `probeAll` additionally checks the actual Fabric/Mixin hooks on all five targets. Test and probe classes are excluded from release jars.
 
-License: CC0-1.0, inherited from the Fabric starter. Reference behavior was independently implemented; no Minecraft, OptiFine or Better Vanilla F3 source/binaries are distributed.
+Shared layout code is in `src/shared/java`; version-specific mixins are generated from `src/client-template`. See [layout investigation](docs/INVESTIGATION.md) for development history and [performance notes](docs/PERFORMANCE.md) for the optimization measurements and their limits.
+
+## Feedback
+
+[Open an issue](https://github.com/S0urceDA/nostalgicf3/issues) with your Minecraft version, Fabric Loader version, mod version, and relevant mods. For layout problems, include a screenshot and the enabled Debug Options; for crashes, include the crash report or relevant log.
+
+## Credits and license
+
+Created by **S0urceDA**. Layout decisions were informed by OptiFine and Better Vanilla F3, with an independent implementation. No Minecraft, OptiFine, or Better Vanilla F3 source or binaries are included.
+
+Released under [CC0-1.0](LICENSE).
