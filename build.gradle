@@ -62,6 +62,7 @@ subprojects {
         inputs.property 'minecraftRange', range
         inputs.property 'modVersion', project.version
         inputs.property 'minimumLoader', minimumLoader
+        inputs.property 'mixinJava', 21
         filesMatching('fabric.mod.json') { expand(version: project.version, minecraft: range, java: legacy ? 21 : 25, loader: minimumLoader) }
         filesMatching('nostalgicf3.mixins.json') { expand(java: 21) }
     }
