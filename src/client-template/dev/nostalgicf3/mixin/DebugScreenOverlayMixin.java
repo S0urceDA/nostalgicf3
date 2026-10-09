@@ -35,15 +35,19 @@ abstract class DebugScreenOverlayMixin {
     private void nostalgicf3$captureEntry(DebugScreenEntry entry, DebugScreenDisplayer vanilla,
             Level level, LevelChunk clientChunk, LevelChunk serverChunk, Operation<Void> original,
             @Local @ID@ id) {
-        List<String> lines = new ArrayList<>();
+        List<ClassicLayout.Event> events = new ArrayList<>();
         DebugScreenDisplayer capture = new DebugScreenDisplayer() {
-            public void addPriorityLine(String line) { lines.add(line); }
-            public void addLine(String line) { lines.add(line); }
-            public void addToGroup(@ID@ group, Collection<String> groupLines) { lines.addAll(groupLines); }
-            public void addToGroup(@ID@ group, String line) { lines.add(line); }
+            public void addPriorityLine(String line) { events.add(ClassicLayout.Event.line(line)); }
+            public void addLine(String line) { events.add(ClassicLayout.Event.line(line)); }
+            public void addToGroup(@ID@ group, Collection<String> groupLines) {
+                events.add(ClassicLayout.Event.group(new ArrayList<>(groupLines)));
+            }
+            public void addToGroup(@ID@ group, String line) {
+                events.add(ClassicLayout.Event.group(List.of(line)));
+            }
         };
         original.call(entry, capture, level, clientChunk, serverChunk);
-        nostalgicf3$frame.add(id.toString(), lines);
+        nostalgicf3$frame.capture(id.toString(), events);
     }
 
     @ModifyArg(method = "@RENDER@", at = @At(value = "INVOKE", target =

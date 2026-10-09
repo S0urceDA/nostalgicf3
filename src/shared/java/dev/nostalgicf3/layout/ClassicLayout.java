@@ -6,86 +6,75 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-/** Orders entry IDs, never their changing or localized text. */
+/** Fixed entry placement and per-output spacing matching OptiFine J9. */
 public final class ClassicLayout {
     public enum Side { LEFT, RIGHT }
-    private record Placement(Side side, int section, int rank) {}
-    private record Output(String id, List<String> lines) {}
+    public record Event(boolean group, List<String> lines) {
+        public Event { lines = List.copyOf(lines); }
+        public static Event line(String text) { return new Event(false, List.of(text)); }
+        public static Event group(List<String> lines) { return new Event(true, lines); }
+    }
+    private record Placement(Side side, int rank) {}
     private static final Map<String, Placement> PLACEMENTS = new HashMap<>();
+    private static final Set<String> NEW_LINE = Set.of("minecraft:player_position", "minecraft:system_specs",
+            "minecraft:looking_at_block", "minecraft:looking_at_fluid", "minecraft:looking_at_entity",
+            "minecraft:looking_at_block_state", "minecraft:looking_at_fluid_state");
+    private static final Set<String> PERFORMANCE = Set.of("minecraft:fps",
+            "minecraft:simple_performance_impactors", "minecraft:gpu_utilization");
     static {
-        section(Side.LEFT, 0, "game_version", "fps", "simple_performance_impactors", "gpu_utilization", "tps",
-                "chunk_render_stats", "entity_render_stats", "particle_render_stats", "chunk_source_stats");
-        section(Side.LEFT, 1, "player_position", "player_section_position", "player_speed", "light_levels", "heightmap", "biome",
-                "local_difficulty", "day_count", "chunk_generation_stats");
-        section(Side.LEFT, 2, "entity_spawn_counts", "sound_mood", "sound_cache", "post_effect", "post_effects");
-        section(Side.RIGHT, 0, "java_version", "memory", "detailed_memory", "system_specs");
-        section(Side.RIGHT, 1, "looking_at_block", "looking_at_block_state", "looking_at_block_tags");
-        section(Side.RIGHT, 2, "looking_at_fluid", "looking_at_fluid_state", "looking_at_fluid_tags");
-        section(Side.RIGHT, 3, "looking_at_entity", "looking_at_entity_tags");
+        register(Side.LEFT, "game_version", "fps", "simple_performance_impactors", "gpu_utilization", "tps",
+                "chunk_render_stats", "entity_render_stats", "particle_render_stats", "chunk_source_stats", "optifine",
+                "player_position", "player_section_position", "player_speed", "light_levels", "heightmap", "biome",
+                "local_difficulty", "day_count", "chunk_generation_stats", "entity_spawn_counts", "sound_mood",
+                "sound_cache", "post_effect", "post_effects");
+        register(Side.RIGHT, "java_version", "memory", "detailed_memory", "system_specs",
+                "looking_at_block", "looking_at_block_state", "looking_at_block_tags",
+                "looking_at_fluid", "looking_at_fluid_state", "looking_at_fluid_tags",
+                "looking_at_entity", "looking_at_entity_tags");
     }
-
-    private static void section(Side side, int section, String... paths) {
-        for (int i = 0; i < paths.length; i++) {
-            PLACEMENTS.put("minecraft:" + paths[i], new Placement(side, section, i));
-        }
+    private static void register(Side side, String... paths) {
+        for (String path : paths) PLACEMENTS.put("minecraft:" + path, new Placement(side, PLACEMENTS.size()));
     }
-
     private static Placement placement(String id) {
-        return PLACEMENTS.getOrDefault(id, new Placement(Side.LEFT, 3, Integer.MAX_VALUE));
+        return PLACEMENTS.getOrDefault(id, new Placement(Side.RIGHT, -1));
     }
-
     public static Side sideOf(String id) { return placement(id).side(); }
 
-    /** A fresh frame captures enabled entries only; it never changes visibility or evaluates entries. */
     public static final class Frame {
-        private final Map<String, List<String>> entries = new LinkedHashMap<>();
-
-        public void add(String id, List<String> lines) {
-            if (!lines.isEmpty()) entries.computeIfAbsent(id, ignored -> new ArrayList<>()).addAll(lines);
+        private final Map<String, List<Event>> entries = new LinkedHashMap<>();
+        public void capture(String id, List<Event> events) {
+            entries.computeIfAbsent(id, ignored -> new ArrayList<>()).addAll(events);
         }
-
         public List<String> column(Side side, List<String> vanillaFooter) {
-            List<Output> outputs = entries.entrySet().stream()
-                    .filter(entry -> sideOf(entry.getKey()) == side)
-                    .map(entry -> new Output(entry.getKey(), entry.getValue()))
-                    .sorted(Comparator.comparingInt((Output output) -> placement(output.id()).section())
-                            .thenComparingInt(output -> placement(output.id()).rank()).thenComparing(Output::id))
-                    .toList();
             List<String> result = new ArrayList<>();
-            int previousSection = -1;
+            List<String> ids = entries.keySet().stream().filter(id -> sideOf(id) == side)
+                    .sorted(Comparator.comparingInt((String id) -> placement(id).rank()).thenComparing(id -> id))
+                    .toList();
             int fpsIndex = -1;
-            for (Output output : outputs) {
-                List<String> lines = output.lines();
-                if (lines.stream().allMatch(String::isEmpty)) continue;
-                int section = placement(output.id()).section();
-                if (previousSection != -1 && section != previousSection) separator(result);
-                previousSection = section;
-                if (isPerformance(output.id())) {
-                    String text = String.join(" ", lines);
-                    if (fpsIndex < 0) { fpsIndex = result.size(); result.add(text); }
-                    else result.set(fpsIndex, result.get(fpsIndex) + " " + text);
-                } else {
-                    // Keep all grouped output intact; blank groups don't move any entries between columns.
-                    result.addAll(lines);
+            for (String id : ids) {
+                for (Event event : entries.get(id)) {
+                    if (event.group()) {
+                        // J9 inserts a row on every marked group call, including empty groups/columns.
+                        if (NEW_LINE.contains(id)) result.add("");
+                        result.addAll(event.lines());
+                    } else {
+                        for (String line : event.lines()) {
+                            if (PERFORMANCE.contains(id)) {
+                                if (fpsIndex >= 0) {
+                                    result.set(fpsIndex, result.get(fpsIndex) + " " + line);
+                                    continue;
+                                }
+                                fpsIndex = result.size();
+                            }
+                            result.add(line);
+                        }
+                    }
                 }
             }
-            int first = 0;
-            while (first < vanillaFooter.size() && vanillaFooter.get(first).isEmpty()) first++;
-            if (first < vanillaFooter.size()) {
-                separator(result);
-                result.addAll(vanillaFooter.subList(first, vanillaFooter.size()));
-            }
-            while (!result.isEmpty() && result.getLast().isEmpty()) result.removeLast();
+            result.addAll(vanillaFooter);
             return result;
-        }
-
-        private static boolean isPerformance(String id) {
-            return id.equals("minecraft:fps") || id.equals("minecraft:simple_performance_impactors")
-                    || id.equals("minecraft:gpu_utilization");
-        }
-        private static void separator(List<String> lines) {
-            if (!lines.isEmpty() && !lines.getLast().isEmpty()) lines.add("");
         }
     }
     private ClassicLayout() {}
