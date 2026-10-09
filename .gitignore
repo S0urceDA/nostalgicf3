@@ -7,4 +7,5 @@ run/
 *.iml
 .vscode/
 OptiFine*.jar
-references//outputs/
+references/
+/outputs/
