@@ -20,6 +20,7 @@ tasks.register('buildAll') {
 subprojects {
     def mc = project.name
     def legacy = mc.startsWith('1.')
+    def minimumLoader = legacy ? rootProject.legacy_loader_version : rootProject.loader_version
     apply plugin: legacy ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
     group = rootProject.group
     version = "${rootProject.version}+mc${mc}"
@@ -28,7 +29,7 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:${mc}"
         if (legacy) mappings loom.officialMojangMappings()
-        add(legacy ? 'modImplementation' : 'implementation', "net.fabricmc:fabric-loader:${rootProject.loader_version}")
+        add(legacy ? 'modImplementation' : 'implementation', "net.fabricmc:fabric-loader:${minimumLoader}")
     }
     java { toolchain { languageVersion = JavaLanguageVersion.of(25) }; withSourcesJar() }
     tasks.withType(JavaCompile).configureEach { options.release = legacy ? 21 : 25 }
@@ -60,7 +61,8 @@ subprojects {
         def range = mc == '1.21.10' ? '>=1.21.9 <=1.21.10' : mc == '26.1.2' ? '>=26.1 <=26.1.2' : mc
         inputs.property 'minecraftRange', range
         inputs.property 'modVersion', project.version
-        filesMatching('fabric.mod.json') { expand(version: project.version, minecraft: range, java: legacy ? 21 : 25) }
+        inputs.property 'minimumLoader', minimumLoader
+        filesMatching('fabric.mod.json') { expand(version: project.version, minecraft: range, java: legacy ? 21 : 25, loader: minimumLoader) }
         filesMatching('nostalgicf3.mixins.json') { expand(java: legacy ? 21 : 25) }
     }
     tasks.register('collectJar', Copy) {
@@ -74,6 +76,7 @@ subprojects {
 repositories { maven { url = 'https://maven.fabricmc.net/' }; mavenCentral() }
 sourceSets { probe }
 dependencies { probeCompileOnly "net.fabricmc:fabric-loader:${loader_version}" }
+tasks.named('compileProbeJava') { options.release = 21 }
 tasks.register('probeJar', Jar) {
     dependsOn probeClasses
     from sourceSets.probe.output
@@ -93,5 +96,11 @@ subprojects {
             }
         }
     }
-    tasks.named('runMixinProbe') { dependsOn rootProject.tasks.named('probeJar') }
+        tasks.named('runMixinProbe') {
+        dependsOn rootProject.tasks.named('probeJar')
+        javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(project.name.startsWith('1.') ? 21 : 25) }
+    }
+    tasks.named('runClient') {
+        javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(project.name.startsWith('1.') ? 21 : 25) }
+    }
 }

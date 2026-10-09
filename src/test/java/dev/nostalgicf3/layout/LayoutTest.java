@@ -57,12 +57,22 @@ public final class LayoutTest {
         ClassicLayout.Frame modern = new ClassicLayout.Frame();
         modern.capture("minecraft:looking_at_block_tags", List.of(group(List.of("#tag"))));
         modern.capture("minecraft:looking_at_block_state", List.of(group(List.of("Block"))));
-        equal(modern.column(RIGHT, List.of()), List.of("", "Block", "#tag"));
+        equal(modern.column(RIGHT, List.of()), List.of("", "Block", "", "#tag"));
         equal(new ClassicLayout.Frame().column(LEFT, List.of("", "Charts")), List.of("", "Charts"));
         ClassicLayout.Frame unknown = new ClassicLayout.Frame();
         unknown.capture("z:entry", List.of(line("first")));
         unknown.capture("a:entry", List.of(line("second")));
         equal(unknown.column(RIGHT, List.of()), List.of("first", "second"));
+        ClassicLayout.Frame preview = new ClassicLayout.Frame();
+        for (String id : List.of("sound_cache", "day_count", "looking_at_entity_tags", "detailed_memory",
+                "looking_at_entity", "looking_at_fluid_tags", "looking_at_fluid_state", "looking_at_block_tags",
+                "looking_at_block_state", "system_specs", "memory")) {
+            preview.capture("minecraft:" + id, List.of(group(List.of(id))));
+        }
+        equal(preview.column(RIGHT, List.of()), List.of("memory", "", "system_specs", "", "looking_at_block_state",
+                "", "looking_at_block_tags", "", "looking_at_fluid_state", "", "looking_at_fluid_tags", "",
+                "looking_at_entity", "detailed_memory", "looking_at_entity_tags", "day_count", "sound_cache"));
+        equal(preview.column(LEFT, List.of()), List.of());
         System.out.println("Exact layout checks passed: 2048 row-for-row visibility fixtures plus empty/repeated groups, FPS merging, unknown entries, footer and modern tags.");
     }
 }

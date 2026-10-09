@@ -20,19 +20,21 @@ public final class ClassicLayout {
     private static final Map<String, Placement> PLACEMENTS = new HashMap<>();
     private static final Set<String> NEW_LINE = Set.of("minecraft:player_position", "minecraft:system_specs",
             "minecraft:looking_at_block", "minecraft:looking_at_fluid", "minecraft:looking_at_entity",
-            "minecraft:looking_at_block_state", "minecraft:looking_at_fluid_state");
+            "minecraft:looking_at_block_state", "minecraft:looking_at_fluid_state",
+            "minecraft:looking_at_block_tags", "minecraft:looking_at_fluid_tags");
     private static final Set<String> PERFORMANCE = Set.of("minecraft:fps",
             "minecraft:simple_performance_impactors", "minecraft:gpu_utilization");
     static {
         register(Side.LEFT, "game_version", "fps", "simple_performance_impactors", "gpu_utilization", "tps",
                 "chunk_render_stats", "entity_render_stats", "particle_render_stats", "chunk_source_stats", "optifine",
                 "player_position", "player_section_position", "player_speed", "light_levels", "heightmap", "biome",
-                "local_difficulty", "day_count", "chunk_generation_stats", "entity_spawn_counts", "sound_mood",
-                "sound_cache", "post_effect", "post_effects");
-        register(Side.RIGHT, "java_version", "memory", "detailed_memory", "system_specs",
+                "local_difficulty", "chunk_generation_stats", "entity_spawn_counts", "sound_mood",
+                "post_effect", "post_effects");
+        register(Side.RIGHT, "memory", "system_specs",
                 "looking_at_block", "looking_at_block_state", "looking_at_block_tags",
                 "looking_at_fluid", "looking_at_fluid_state", "looking_at_fluid_tags",
-                "looking_at_entity", "looking_at_entity_tags");
+                "looking_at_entity");
+        register(Side.RIGHT, "detailed_memory", "looking_at_entity_tags", "day_count", "sound_cache");
         register(Side.RIGHT, "entity_hitboxes", "chunk_borders", "3d_crosshair", "chunk_section_paths",
                 "chunk_section_octree", "visualize_water_levels", "visualize_heightmap", "visualize_collision_boxes",
                 "visualize_entity_supporting_blocks", "visualize_block_light_levels", "visualize_sky_light_levels",
