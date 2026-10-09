@@ -13,6 +13,9 @@ abstract class DebugScreenEntryListMixin {
     @ModifyArg(method = "rebuildCurrentList", at = @At(value = "INVOKE",
             target = "Ljava/util/List;sort(Ljava/util/Comparator;)V"), index = 0)
     private Comparator<@ID@> nostalgicf3$order(Comparator<@ID@> original) {
-        return (first, second) -> ClassicLayout.compareIds(first.toString(), second.toString());
+        return (first, second) -> {
+            int order = ClassicLayout.compareIds(first.toString(), second.toString());
+            return order != 0 ? order : original.compare(first, second);
+        };
     }
 }

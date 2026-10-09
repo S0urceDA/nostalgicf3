@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.nostalgicf3.layout.ClassicLayout;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.resources.@ID@;
@@ -25,9 +26,10 @@ import java.util.List;
 abstract class DebugScreenOverlayMixin {
     @Unique private ClassicLayout.Frame nostalgicf3$frame;
 
-    @Inject(method = "@RENDER@", at = @At("HEAD"))
+    @Inject(method = "@RENDER@", at = @At("HEAD"), cancellable = true)
     private void nostalgicf3$beginFrame(CallbackInfo ci) {
         nostalgicf3$frame = new ClassicLayout.Frame();
+        if (Minecraft.getInstance().@HIDDEN@) ci.cancel();
     }
 
     @WrapOperation(method = "@RENDER@", at = @At(value = "INVOKE", target =
@@ -35,6 +37,10 @@ abstract class DebugScreenOverlayMixin {
     private void nostalgicf3$captureEntry(DebugScreenEntry entry, DebugScreenDisplayer vanilla,
             Level level, LevelChunk clientChunk, LevelChunk serverChunk, Operation<Void> original,
             @Local @ID@ id) {
+        if (!ClassicLayout.isKnown(id.toString())) {
+            original.call(entry, vanilla, level, clientChunk, serverChunk);
+            return;
+        }
         List<ClassicLayout.Event> events = new ArrayList<>();
         DebugScreenDisplayer capture = new DebugScreenDisplayer() {
             public void addPriorityLine(String line) { events.add(ClassicLayout.Event.line(line)); }

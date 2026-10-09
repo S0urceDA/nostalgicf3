@@ -41,12 +41,19 @@ subprojects {
         doLast {
             rootProject.file('src/client-template').eachFileRecurse { input ->
                 if (input.isFile()) {
+                    if (input.name == 'LegacyEntityCounterMixin.java' && !legacy) return
+                    def newerGui = mc == '26.2' || mc == '26.3'
+                    if (input.name == 'EarlyDebugOverlayMixin.java' && newerGui) return
+                    if (input.name == 'ModernEarlyDebugOverlayMixin.java' && !newerGui) return
                     def relative = rootProject.file('src/client-template').toPath().relativize(input.toPath()).toString()
                     def output = new File(generated.get().asFile, relative)
                     output.parentFile.mkdirs()
                     output.text = input.getText('UTF-8')
                         .replace('@ID@', mc == '1.21.10' ? 'ResourceLocation' : 'Identifier')
                         .replace('@RENDER@', legacy ? 'render' : 'extractRenderState')
+                        .replace('@GUI_METHOD@', legacy ? 'render' : 'extractGui')
+                        .replace('@DEBUG_METHOD@', legacy ? 'renderDebugOverlay' : 'extractDebugOverlay')
+                        .replace('@HIDDEN@', newerGui ? 'gui.hud.isHidden()' : 'options.hideGui')
                         .replace('@LINES@', legacy ? 'renderLines' : 'extractLines')
                         .replace('@GRAPHICS@', legacy ? 'GuiGraphics' : 'GuiGraphicsExtractor').replace('@EXTRA_ARG@', mc == '26.3' ? 'I' : '')
                 }
@@ -64,7 +71,9 @@ subprojects {
         inputs.property 'minimumLoader', minimumLoader
         inputs.property 'mixinJava', 21
         filesMatching('fabric.mod.json') { expand(version: project.version, minecraft: range, java: legacy ? 21 : 25, loader: minimumLoader) }
-        filesMatching('nostalgicf3.mixins.json') { expand(java: 21) }
+        filesMatching('nostalgicf3.mixins.json') { expand(java: 21,
+                extraMixins: (legacy ? ', "LegacyEntityCounterMixin"' : '') +
+                    ((mc == '26.2' || mc == '26.3') ? ', "ModernEarlyDebugOverlayMixin"' : ', "EarlyDebugOverlayMixin"')) }
     }
     tasks.register('collectJar', Copy) {
         def artifact = tasks.named(legacy ? 'remapJar' : 'jar')
