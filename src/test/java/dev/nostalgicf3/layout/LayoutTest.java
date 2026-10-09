@@ -94,6 +94,17 @@ public final class LayoutTest {
                 List.of("Java", "Priority", "", "Mod A", "Mod B", "", "Mod C", ""));
         equal(modGroups.column(LEFT, List.of("Fabric renderer", "", "Debug charts: hints")),
                 List.of("Fabric renderer", "", "Debug charts: hints"));
+        equal(modGroups.column(RIGHT, List.of()),
+                List.of("Java", "", "Mod A", "Mod B", "", "Mod C", ""));
+        equal(modGroups.column(RIGHT, List.of("")),
+                List.of("Java", "", "Mod A", "Mod B", "", "Mod C", ""));
+        ClassicLayout.Frame modOnly = new ClassicLayout.Frame();
+        modOnly.captureUnknownGroup("example:group", List.of("Mod"));
+        equal(modOnly.column(RIGHT, List.of()), List.of("Mod", ""));
+        ClassicLayout.Frame emptyMod = new ClassicLayout.Frame();
+        add(emptyMod, "system_specs", "Java");
+        emptyMod.captureUnknownGroup("example:empty", List.of());
+        equal(emptyMod.column(RIGHT, List.of()), List.of("Java"));
         ClassicLayout.Frame spacing = new ClassicLayout.Frame();
         add(spacing, "fps", "60 fps vsync ");
         add(spacing, "simple_performance_impactors", " fancy-clouds B: 5", "Filtering: None");

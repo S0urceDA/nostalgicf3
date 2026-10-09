@@ -52,3 +52,7 @@ Unknown entries now forward priority/ordinary lines to vanilla but collect named
 FPS additions strip boundary whitespace and join with exactly one space. The two vanilla separators around left priority/regular text are suppressed, leaving the existing chart-hint separator. The forced F1 cancellation from 0.1.3 is removed at the user's request: Better Vanilla F3 defaults that option off. Optional forced day-count and profiler customization remain absent.
 
 All five builds and expanded real loader probes passed on the existing minimum Loader versions. Regression fixtures cover unknown groups sharing identifiers, empty groups, priority remainder, FPS whitespace and chart-hint spacing alongside the existing 2,048 visibility checks. Visual confirmation in a running world remains a separate check.
+
+## 0.1.5: separator before unknown groups
+
+Insert a blank row before each nonempty unknown group only when the previous right-column row contains text. Existing separators are reused, empty groups add nothing, and a mod-only column has no leading blank. This fixes groups such as Voxy touching system specifications without any mod-specific rule. Regression cases for present/absent separators, repeated groups, empty groups and mod-only columns passed, as did all five builds. Mixin hooks are unchanged from the 0.1.4 loader probes.

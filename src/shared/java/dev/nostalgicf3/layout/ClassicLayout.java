@@ -93,6 +93,7 @@ public final class ClassicLayout {
             if (side == Side.RIGHT) {
                 for (List<String> group : unknownGroups.values()) {
                     if (group.isEmpty()) continue;
+                    if (!result.isEmpty() && !result.get(result.size() - 1).isEmpty()) result.add("");
                     result.addAll(group);
                     result.add("");
                 }

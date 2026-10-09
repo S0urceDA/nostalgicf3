@@ -1,6 +1,6 @@
 # Nostalgic F3
 
-A small client-side Fabric mod that gives vanilla debug entries fixed columns and a familiar order. Version 0.1.4 adopts the config-free layout and fixes requested after comparing Better Vanilla F3. Vanilla Debug Options (F3 + F6) still control visibility, including Always On. There is no configuration file, Fabric API requirement, or configuration library.
+A small client-side Fabric mod that gives vanilla debug entries fixed columns and a familiar order. Version 0.1.5 adopts the config-free layout and fixes requested after comparing Better Vanilla F3. Vanilla Debug Options (F3 + F6) still control visibility, including Always On. There is no configuration file, Fabric API requirement, or configuration library.
 
 ## Install
 
