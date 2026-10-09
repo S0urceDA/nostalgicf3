@@ -34,3 +34,11 @@ Run `gradlew layoutBenchmark --no-daemon` to repeat. The benchmark is opt-in and
 - All five release targets build with existing Loader and Java requirements.
 - Real Fabric probes transform every hook and exercise the reused collector on every target: known capture, unknown priority/ordinary forwarding, named group merging, reset, collector identity, cleared displayer references and the lazy empty-overlay path.
 - Test references, benchmark code and constructor-free probe helpers are excluded from release jars. The layout has been visually tested by the user in game. No in-game FPS improvement is claimed; the benchmark measures layout assembly only.
+
+## F3 width caching (development, version remains 1.0.0)
+
+The overlay now caches measured line widths, including lines from other mods. Vanilla measures each nonempty line twice per frame (background and text). A previously unseen string is measured once; subsequent draws reuse its width until eviction or font invalidation. No debug values are sampled less frequently and no rows are omitted.
+
+The cache belongs to each overlay and retains at most 512 strings. It clears on capacity, font replacement, resource-pack font reload and font-option updates. GUI resizing and scale changes continue to use vanilla positioning; measured widths are in GUI units. Font-manager invalidation hooks and both width call sites are verified by actual Mixin transformation on all supported games.
+
+This removes repeated font-width traversal, not glyph preparation, GUI ordering or GPU submission. It remains compatible with Sodium Extra's cached strings. It does not bypass vanilla drawing or assume a fixed font/resource pack. No in-game FPS gain is claimed without profiling. Prepared-text/geometry caching remains a separate possible optimization requiring additional renderer compatibility work.

@@ -4,6 +4,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.nostalgicf3.layout.ClassicLayout;
+import dev.nostalgicf3.layout.TextWidthCache;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
@@ -25,6 +27,7 @@ import java.util.Map;
 @Mixin(DebugScreenOverlay.class)
 abstract class DebugScreenOverlayMixin {
     @Unique private ClassicLayout.Frame nostalgicf3$frame;
+    @Unique private final TextWidthCache nostalgicf3$widths = new TextWidthCache();
     @Unique private final Map<@ID@, Integer> nostalgicf3$entryIndices = new HashMap<>();
     @Unique private DebugScreenDisplayer nostalgicf3$collector;
     @Unique private DebugScreenDisplayer nostalgicf3$vanilla;
@@ -93,4 +96,14 @@ abstract class DebugScreenOverlayMixin {
     private List<String> nostalgicf3$right(List<String> footer) {
         return nostalgicf3$frame == null ? footer : nostalgicf3$frame.column(ClassicLayout.Side.RIGHT, footer);
     }
+    @WrapOperation(method = "@LINES@", at = @At(value = "INVOKE", target =
+            "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I"))
+    private int nostalgicf3$cachedWidth(Font font, String text, Operation<Integer> original) {
+        int cached = nostalgicf3$widths.get(font, text);
+        if (cached >= 0) return cached;
+        int width = original.call(font, text);
+        nostalgicf3$widths.put(text, width);
+        return width;
+    }
+
 }

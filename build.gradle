@@ -124,3 +124,11 @@ subprojects {
         javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(project.name.startsWith('1.') ? 21 : 25) }
     }
 }
+
+tasks.register('textWidthCacheTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.nostalgicf3.layout.TextWidthCacheTest'
+}
+tasks.check.dependsOn textWidthCacheTest
+tasks.buildAll.dependsOn textWidthCacheTest

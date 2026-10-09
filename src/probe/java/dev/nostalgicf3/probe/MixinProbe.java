@@ -9,7 +9,7 @@ public final class MixinProbe implements PreLaunchEntrypoint {
         try {
             Class<?> overlay = Class.forName("net.minecraft.client.gui.components.DebugScreenOverlay", false,
                     Thread.currentThread().getContextClassLoader());
-            for (String hook : new String[]{"beginFrame", "captureEntry", "left", "right", "skipRedundantSeparator"}) {
+            for (String hook : new String[]{"beginFrame", "captureEntry", "left", "right", "skipRedundantSeparator", "cachedWidth"}) {
                 if (Arrays.stream(overlay.getDeclaredMethods()).noneMatch(m -> m.getName().contains("nostalgicf3$" + hook))) {
                     throw new AssertionError("Missing transformed overlay hook: " + hook);
                 }
@@ -28,6 +28,7 @@ public final class MixinProbe implements PreLaunchEntrypoint {
             check(version.startsWith("26.2") || version.startsWith("26.3")
                     ? "net.minecraft.client.gui.Gui" : "net.minecraft.client.renderer.GameRenderer", "beforeMenus", "skipLateOverlay");
             check("net.minecraft.client.gui.components.debug.DebugEntryParticleRenderStats", "totalEntities");
+            check("net.minecraft.client.gui.font.FontManager", "invalidateWidths");
             ParticleCounterProbe.verify();
             CollectorProbe.verify(overlay);
             System.out.println("NOSTALGICF3_MIXIN_PROBE_OK: overlay, ordering, coordinates, menu placement and applicable entity-counter hooks transformed successfully.");
