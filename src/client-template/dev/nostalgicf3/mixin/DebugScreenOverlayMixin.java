@@ -47,13 +47,13 @@ abstract class DebugScreenOverlayMixin {
     }
 
     @ModifyArg(method = "@RENDER@", at = @At(value = "INVOKE", target =
-            "Lnet/minecraft/client/gui/components/DebugScreenOverlay;@LINES@(Lnet/minecraft/client/gui/@GRAPHICS@;Ljava/util/List;Z)V", ordinal = 0), index = 1)
+            "Lnet/minecraft/client/gui/components/DebugScreenOverlay;@LINES@(Lnet/minecraft/client/gui/@GRAPHICS@;Ljava/util/List;Z@EXTRA_ARG@)V", ordinal = 0), index = 1)
     private List<String> nostalgicf3$left(List<String> footer) {
         return nostalgicf3$frame.column(ClassicLayout.Side.LEFT, footer);
     }
 
     @ModifyArg(method = "@RENDER@", at = @At(value = "INVOKE", target =
-            "Lnet/minecraft/client/gui/components/DebugScreenOverlay;@LINES@(Lnet/minecraft/client/gui/@GRAPHICS@;Ljava/util/List;Z)V", ordinal = 1), index = 1)
+            "Lnet/minecraft/client/gui/components/DebugScreenOverlay;@LINES@(Lnet/minecraft/client/gui/@GRAPHICS@;Ljava/util/List;Z@EXTRA_ARG@)V", ordinal = 1), index = 1)
     private List<String> nostalgicf3$right(List<String> footer) {
         return nostalgicf3$frame.column(ClassicLayout.Side.RIGHT, footer);
     }

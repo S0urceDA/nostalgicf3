@@ -16,13 +16,13 @@ public final class ClassicLayout {
     static {
         section(Side.LEFT, 0, "game_version", "fps", "simple_performance_impactors", "gpu_utilization", "tps",
                 "chunk_render_stats", "entity_render_stats", "particle_render_stats", "chunk_source_stats");
-        section(Side.LEFT, 1, "player_position", "player_section_position", "light_levels", "heightmap", "biome",
+        section(Side.LEFT, 1, "player_position", "player_section_position", "player_speed", "light_levels", "heightmap", "biome",
                 "local_difficulty", "day_count", "chunk_generation_stats");
-        section(Side.LEFT, 2, "entity_spawn_counts", "sound_mood", "post_effect");
+        section(Side.LEFT, 2, "entity_spawn_counts", "sound_mood", "sound_cache", "post_effect", "post_effects");
         section(Side.RIGHT, 0, "java_version", "memory", "detailed_memory", "system_specs");
-        section(Side.RIGHT, 1, "looking_at_block", "looking_at_block_state");
-        section(Side.RIGHT, 2, "looking_at_fluid", "looking_at_fluid_state");
-        section(Side.RIGHT, 3, "looking_at_entity");
+        section(Side.RIGHT, 1, "looking_at_block", "looking_at_block_state", "looking_at_block_tags");
+        section(Side.RIGHT, 2, "looking_at_fluid", "looking_at_fluid_state", "looking_at_fluid_tags");
+        section(Side.RIGHT, 3, "looking_at_entity", "looking_at_entity_tags");
     }
 
     private static void section(Side side, int section, String... paths) {

@@ -28,7 +28,7 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:${mc}"
         if (legacy) mappings loom.officialMojangMappings()
-        implementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+        add(legacy ? 'modImplementation' : 'implementation', "net.fabricmc:fabric-loader:${rootProject.loader_version}")
     }
     java { toolchain { languageVersion = JavaLanguageVersion.of(25) }; withSourcesJar() }
     tasks.withType(JavaCompile).configureEach { options.release = legacy ? 21 : 25 }
@@ -47,7 +47,7 @@ subprojects {
                         .replace('@ID@', mc == '1.21.10' ? 'ResourceLocation' : 'Identifier')
                         .replace('@RENDER@', legacy ? 'render' : 'extractRenderState')
                         .replace('@LINES@', legacy ? 'renderLines' : 'extractLines')
-                        .replace('@GRAPHICS@', legacy ? 'GuiGraphics' : 'GuiGraphicsExtractor')
+                        .replace('@GRAPHICS@', legacy ? 'GuiGraphics' : 'GuiGraphicsExtractor').replace('@EXTRA_ARG@', mc == '26.3' ? 'I' : '')
                 }
             }
         }
