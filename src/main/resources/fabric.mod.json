@@ -3,11 +3,23 @@
   "id": "nostalgicf3",
   "version": "${version}",
   "name": "Nostalgic F3",
-  "authors": ["S0urceDA"],
+  "authors": [
+    "S0urceDA"
+  ],
   "description": "Restores the familiar F3 layout with fixed columns, clean spacing, and vanilla debug-screen fixes. Respects vanilla Debug Options.",
   "icon": "assets/nostalgicf3/icon.png",
   "environment": "client",
   "license": "CC0-1.0",
-  "mixins": ["nostalgicf3.mixins.json"],
-  "depends": {"fabricloader": ">=${loader}", "minecraft": "${minecraft}", "java": ">=${java}"}
+  "mixins": [
+    "nostalgicf3.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader}",
+    "minecraft": "${minecraft}",
+    "java": ">=${java}"
+  },
+  "contact": {
+    "sources": "https://github.com/S0urceDA/nostalgicf3",
+    "issues": "https://github.com/S0urceDA/nostalgicf3/issues"
+  }
 }
