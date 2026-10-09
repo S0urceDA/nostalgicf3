@@ -32,7 +32,7 @@ subprojects {
         add(legacy ? 'modImplementation' : 'implementation', "net.fabricmc:fabric-loader:${minimumLoader}")
     }
     java { toolchain { languageVersion = JavaLanguageVersion.of(25) }; withSourcesJar() }
-    tasks.withType(JavaCompile).configureEach { options.release = legacy ? 21 : 25 }
+    tasks.withType(JavaCompile).configureEach { options.release = 21 }
     def generated = layout.buildDirectory.dir('generated/sources/client')
     tasks.register('generateVersionSources') {
         inputs.dir rootProject.file('src/client-template')
@@ -63,7 +63,7 @@ subprojects {
         inputs.property 'modVersion', project.version
         inputs.property 'minimumLoader', minimumLoader
         filesMatching('fabric.mod.json') { expand(version: project.version, minecraft: range, java: legacy ? 21 : 25, loader: minimumLoader) }
-        filesMatching('nostalgicf3.mixins.json') { expand(java: legacy ? 21 : 25) }
+        filesMatching('nostalgicf3.mixins.json') { expand(java: 21) }
     }
     tasks.register('collectJar', Copy) {
         def artifact = tasks.named(legacy ? 'remapJar' : 'jar')
