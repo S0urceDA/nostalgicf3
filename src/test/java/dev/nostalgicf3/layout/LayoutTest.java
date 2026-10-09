@@ -91,7 +91,7 @@ public final class LayoutTest {
         modGroups.captureUnknownGroup("example:group", List.of("Mod B"));
         modGroups.captureUnknownGroup("another:group", List.of("Mod C"));
         equal(modGroups.column(RIGHT, List.of("Priority", "")),
-                List.of("Java", "Priority", "", "Mod A", "Mod B", "", "Mod C", ""));
+                List.of("Java", "", "Priority", "", "Mod A", "Mod B", "", "Mod C", ""));
         equal(modGroups.column(LEFT, List.of("Fabric renderer", "", "Debug charts: hints")),
                 List.of("Fabric renderer", "", "Debug charts: hints"));
         equal(modGroups.column(RIGHT, List.of()),
@@ -105,6 +105,14 @@ public final class LayoutTest {
         add(emptyMod, "system_specs", "Java");
         emptyMod.captureUnknownGroup("example:empty", List.of());
         equal(emptyMod.column(RIGHT, List.of()), List.of("Java"));
+        ClassicLayout.Frame ordinaryMod = new ClassicLayout.Frame();
+        add(ordinaryMod, "system_specs", "Java", "CPU", "Display");
+        equal(ordinaryMod.column(RIGHT, List.of("Mod version", "")),
+                List.of("Java", "CPU", "Display", "", "Mod version", ""));
+        equal(ordinaryMod.column(RIGHT, List.of("", "Mod version", "")),
+                List.of("Java", "CPU", "Display", "", "Mod version", ""));
+        equal(ordinaryMod.column(RIGHT, List.of()), List.of("Java", "CPU", "Display"));
+        equal(new ClassicLayout.Frame().column(RIGHT, List.of("Mod version", "")), List.of("Mod version", ""));
         ClassicLayout.Frame spacing = new ClassicLayout.Frame();
         add(spacing, "fps", "60 fps vsync ");
         add(spacing, "simple_performance_impactors", " fancy-clouds B: 5", "Filtering: None");

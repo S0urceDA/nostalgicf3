@@ -89,6 +89,9 @@ public final class ClassicLayout {
                 }
                 memoryBlock |= memory;
             }
+            // Known rows are assembled separately; restore vanilla's boundary before right-side mod text.
+            if (side == Side.RIGHT && !result.isEmpty() && !vanillaRemainder.isEmpty()
+                    && !result.get(result.size() - 1).isEmpty() && !vanillaRemainder.get(0).isEmpty()) result.add("");
             result.addAll(vanillaRemainder);
             if (side == Side.RIGHT) {
                 for (List<String> group : unknownGroups.values()) {

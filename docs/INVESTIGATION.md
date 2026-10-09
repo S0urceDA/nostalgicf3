@@ -56,3 +56,9 @@ All five builds and expanded real loader probes passed on the existing minimum L
 ## 0.1.5: separator before unknown groups
 
 Insert a blank row before each nonempty unknown group only when the previous right-column row contains text. Existing separators are reused, empty groups add nothing, and a mod-only column has no leading blank. This fixes groups such as Voxy touching system specifications without any mod-specific rule. Regression cases for present/absent separators, repeated groups, empty groups and mod-only columns passed, as did all five builds. Mixin hooks are unchanged from the 0.1.4 loader probes.
+
+## 0.1.6: ordinary mod output boundary
+
+The user confirmed 0.1.5 still lacked a gap. The live game log confirmed that version was loaded. Inspecting Better Vanilla F3 showed known right-side lines are placed directly into vanilla rightLines before vanilla retains its pre-regular-output separator (only the left separators are suppressed). Our separate assembly left vanilla unaware of those known rows. Voxy's version entry uses addLine, while its detailed debug entry uses named groups; the 0.1.5 group-only fix therefore missed the ordinary version line.
+
+Restore a separator at the boundary between assembled known right-side rows and vanilla ordinary/priority remainder when both boundary rows contain text. Existing blank rows are reused; empty remainder or absent known rows add no separator. This is independent of mod IDs. Regression fixtures cover ordinary mod text after system specs, a preexisting gap, empty remainder and a mod-only column. All five builds and layout checks passed. The actual modded-world visual result remains to be checked by the user.
