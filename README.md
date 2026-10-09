@@ -1,6 +1,6 @@
 # Nostalgic F3
 
-A small client-side Fabric mod that gives vanilla debug entries fixed columns and a familiar order. Version 0.1.6 adopts the config-free layout and fixes requested after comparing Better Vanilla F3. Vanilla Debug Options (F3 + F6) still control visibility, including Always On. There is no configuration file, Fabric API requirement, or configuration library.
+A small client-side Fabric mod that gives vanilla debug entries fixed columns and a familiar order. Version 0.1.7 preserves the config-free layout and fixes requested after comparing Better Vanilla F3. Vanilla Debug Options (F3 + F6) still control visibility, including Always On. There is no configuration file, Fabric API requirement, or configuration library.
 
 ## Install
 
@@ -14,7 +14,7 @@ Use Fabric Loader 0.17.3 or newer on 1.21.x, or 0.18.4 or newer on 26.x. Choose 
 | 26.2 | 26.2 | 25+ |
 | 26.3 | 26.3 | 25+ |
 
-All five targets passed builds and real Fabric/Mixin transformation probes. Adjacent patch versions are declared compatible but were not launched separately. The probes do not replace an in-world visual check.
+All five targets passed builds and real Fabric/Mixin transformation probes. Adjacent patch versions are declared compatible but were not launched separately. The probes also exercise the actual transformed reusable collector, its forwarding and reset behavior. The probes do not replace an in-world visual check.
 
 ## Behavior
 
@@ -39,11 +39,11 @@ $env:JAVA_HOME='C:\Program Files\Java\jdk-25.0.1'
 .\gradlew.bat :26.3:runClient
 ```
 
-`buildAll` produces five installable jars in `build/libs`. `layoutTest` checks 2,048 visibility combinations plus modern placement, absent FPS/difficulty, empty and repeated targets, memory spacing, vanilla remainder preservation and negative relative coordinates. `probeAll` forces the actual game classes through Fabric/Mixin and checks overlay, ordering, position, menu rendering and applicable entity-counter hooks, then exits without a game window. Its test mod is excluded from release jars.
+`layoutParityTest` is part of buildAll/check and compares 12,000 randomized frames against the test-only 0.1.6 reference. `buildAll` produces five installable jars in `build/libs`. `layoutTest` checks 2,048 visibility combinations plus modern placement, absent FPS/difficulty, empty and repeated targets, memory spacing, vanilla remainder preservation and negative relative coordinates. `probeAll` forces the actual game classes through Fabric/Mixin and checks overlay, ordering, position, menu rendering and applicable entity-counter hooks, then exits without a game window. Its test mod is excluded from release jars.
 
 Shared layout rules live in `src/shared/java`; version-adapted mixin templates are in `src/client-template`. Generated sources live under each version's ignored build directory. `docs/INVESTIGATION.md` records decisions and verification. The historical OptiFine layout was superseded by the user's requested Better Vanilla F3 behavior in 0.1.3.
 
-Git history records layout changes, rendering fixes and release documentation separately.
+Version 0.1.7 refactors assembly into reusable indexed buffers and one collector. Output matches 0.1.6 in 12,000 randomized comparisons. The local stress benchmark measured about 83% less assembly time and 99% less allocation; this is not an in-game FPS result. See `docs/PERFORMANCE.md` for measurements and limits. Run `gradlew layoutBenchmark` to repeat. Git history records the behavior reference, optimization, tests and release documentation separately.
 
 Project location: `C:\Users\andra\AppData\Roaming\.minecraft\e\nostalgicf3`.
 
