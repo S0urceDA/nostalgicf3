@@ -1,0 +1,7 @@
+pluginManagement { repositories { maven { url = 'https://maven.fabricmc.net/' }; gradlePluginPortal(); mavenCentral() } }
+rootProject.name = 'nostalgicf3-patch-compatibility'
+['1.21.9', '26.1', '26.1.1'].each { mc ->
+    include(mc)
+    project(":${mc}").projectDir = file("build/projects/${mc}")
+    project(":${mc}").projectDir.mkdirs()
+}

@@ -58,7 +58,7 @@ chmod +x gradlew
 
 The five installable jars are written to `build/libs`. To launch a development client, run `./gradlew :26.3:runClient` (or `gradlew.bat` on Windows), substituting another jar target if needed.
 
-`buildAll` includes layout regression checks and 12,000 randomized comparisons. `probeAll` additionally checks the actual Fabric/Mixin hooks on all five targets. Test and probe classes are excluded from release jars.
+`buildAll` includes layout regression checks and 12,000 randomized comparisons. `probeAll` additionally checks the actual Fabric/Mixin hooks on all five targets. Test and probe classes are excluded from release jars. After building, run `./gradlew -p compatibility-tests verifyAll` to check the packaged 1.21.10 jar on 1.21.9 and the packaged 26.1.2 jar on 26.1 and 26.1.1. These checks run the actual Mixin hooks and collector without opening a game window; they are also included in CI.
 
 Shared layout code is in `src/shared/java`; version-specific mixins are generated from `src/client-template`. See [layout investigation](docs/INVESTIGATION.md) for development history and [performance notes](docs/PERFORMANCE.md) for the optimization measurements and their limits.
 

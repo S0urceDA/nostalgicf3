@@ -13,6 +13,8 @@ jobs:
             25
       - uses: gradle/actions/setup-gradle@v5
       - run: chmod +x gradlew && ./gradlew buildAll probeAll --no-daemon
+      - name: Check earlier patch versions with packaged jars
+        run: ./gradlew -p compatibility-tests verifyAll --no-daemon
       - uses: actions/upload-artifact@v7
         with:
           name: nostalgicf3

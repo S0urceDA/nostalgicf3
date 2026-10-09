@@ -39,7 +39,7 @@ final class CollectorProbe {
         ClassLoader loader = overlay.getClassLoader();
         String version = net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("minecraft").orElseThrow()
                 .getMetadata().getVersion().getFriendlyString();
-        Class<?> idType = Class.forName("net.minecraft.resources." + (version.equals("1.21.10") ? "ResourceLocation" : "Identifier"), true, loader);
+        Class<?> idType = Class.forName("net.minecraft.resources." + ((version.equals("1.21.9") || version.equals("1.21.10")) ? "ResourceLocation" : "Identifier"), true, loader);
         Method parse = idType.getMethod("parse", String.class);
         Object group = parse.invoke(null, "probe:group");
         Method addLine = displayerType.getMethod("addLine", String.class);

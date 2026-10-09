@@ -1,0 +1,32 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version '1.18.3' apply false
+    id 'net.fabricmc.fabric-loom' version '1.18.3' apply false
+}
+def releaseProperties = new Properties()
+file('../gradle.properties').withInputStream { releaseProperties.load(it) }
+subprojects {
+    def legacy = name == '1.21.9'
+    apply plugin: legacy ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
+    def originalJar = rootProject.file('../build/libs/nostalgicf3-' + releaseProperties.mod_version + '+mc' + (legacy ? '1.21.10' : '26.1.2') + '.jar')
+    if (!originalJar.isFile()) throw new GradleException('Build the release jars with buildAll before running compatibility tests.')
+    repositories { mavenCentral() }
+    dependencies {
+        minecraft "com.mojang:minecraft:${project.name}"
+        if (legacy) mappings loom.officialMojangMappings()
+        add(legacy ? 'modImplementation' : 'implementation', "net.fabricmc:fabric-loader:${legacy ? releaseProperties.legacy_loader_version : releaseProperties.loader_version}")
+        add(legacy ? 'modImplementation' : 'implementation', files(originalJar))
+    }
+    sourceSets.main.java.srcDirs = [rootProject.file('../src/probe/java')]
+    sourceSets.main.resources.srcDirs = [rootProject.file('../src/probe/resources')]
+    java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
+    tasks.withType(JavaCompile).configureEach { options.release = 21 }
+    loom { runs { compatibilityProbe {
+        client()
+        runDir 'build/probe-run'
+        if (!legacy) vmArg "-Dfabric.addMods=${originalJar.absolutePath}"
+    } } }
+    tasks.named('runCompatibilityProbe') {
+        javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(legacy ? 21 : 25) }
+    }
+}
+tasks.register('verifyAll') { dependsOn subprojects.collect { "${it.path}:runCompatibilityProbe" } }
