@@ -41,7 +41,7 @@ This is a **client-only** mod. Servers do not need it.
 
 Download the matching jar from the [1.0.0 release](https://github.com/S0urceDA/nostalgicf3/releases/tag/v1.0.0), or build from source using the instructions below.
 
-The new F3 rendering optimizations are currently available in source builds. The existing 1.0.0 release downloads have not yet been refreshed.
+The refreshed 1.0.0 release includes debug-chart rectangle batching, cached F3 text widths and prepared text, and batched line backgrounds.
 
 ## Building
 

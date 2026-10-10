@@ -10,3 +10,5 @@ First stable release of Nostalgic F3.
 - Handles vanilla and unknown mod output without hardcoded mod IDs, while separating the right-side system information cleanly.
 - Supports Minecraft 1.21.9–1.21.11 and 26.1–26.3 with one matching jar per game version.
 - Includes no configuration, Fabric API or other mod-library dependency.
+- Batches debug-chart rectangles to reduce repeated GUI layer-placement and intersection checks.
+- Reuses F3 text widths and prepared text, and batches line backgrounds to reduce overlay preparation work.
